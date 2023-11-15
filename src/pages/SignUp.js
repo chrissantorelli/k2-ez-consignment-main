@@ -1,85 +1,123 @@
-import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
 
 export function SignUp() {
-    const [fullName, setFullName] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [retypePassword, setRetypePassword] = useState('');
-    const [role, setRole] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [retypePassword, setRetypePassword] = useState('');
+  const [role, setRole] = useState('');
+  const [errorMessages, setErrorMessages] = useState([]);
+  const [result, setResult] = useState('');
 
-    const handleFullNameChange = (event) => {
-        setFullName(event.target.value);
+  function generateUniqueUID() {
+    const timestamp = new Date().getTime();
+    return parseInt(timestamp, 10); // Convert timestamp to an integer
+  }
+
+  function handleClick() {
+    const uid = generateUniqueUID();
+    const data = {
+      uid,
+      username,
+      password,
+      role,
     };
 
-    const handleUsernameChange = (event) => {
-        setUsername(event.target.value);
-    };
+    console.log(data)
 
-    const handlePasswordChange = (event) => {
-        setPassword(event.target.value);
-    };
+    if (password !== retypePassword) {
+      setErrorMessages(['Passwords do not match.']);
+      return;
+    }
 
-    const handleRetypePasswordChange = (event) => {
-        setRetypePassword(event.target.value);
-    };
+    setErrorMessages([]);
 
-    const handleRoleChange = (event) => {
-        setRole(event.target.value);
-    };
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        if (!fullName || !username || !password || !retypePassword || !role) {
-            setErrorMessage("All fields are required.");
-        } else if (password !== retypePassword) {
-            setErrorMessage("Passwords do not match. Please re-enter your password.");
+    fetch('https://p1b27ft9l9.execute-api.us-east-1.amazonaws.com/signup-stage/signup', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else if (response.status === 400) {
+          alert('Unable to process request');
         } else {
-            setErrorMessage(""); 
-            let fullName = document.getElementById("name").value;
-            let username = document.getElementById("username").value;
-            let password = document.getElementById("password").value;
-            let role = document.getElementById("role").value;
-            console.log(fullName, username, password, role);
-            alert("Form submitted successfully!");
+          alert('Not DONE');
         }
-    };
-    
+      })
+      .then((data) => {
+        setResult(data.body);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
 
-    return (
-        <div style={{ textAlign: 'center' }}>
-            <h1>Sign Up</h1>
-            <form style={{ display: 'inline-block', textAlign: 'left' }} onSubmit={handleSubmit}>
-                <label style={{ display: 'block' }}>
-                    Full Name:*
-                    <input type="text" name="name" id="name" onChange={handleFullNameChange} />
-                </label>
-                <label style={{ display: 'block' }}>
-                    Username:*
-                    <input type="text" name="username" id="username" onChange={handleUsernameChange} />
-                </label>
-                <label style={{ display: 'block' }}>
-                    Password:*
-                    <input type="password" name="password" id="password" onChange={handlePasswordChange} />
-                </label>
-                <label style={{ display: 'block' }}>
-                    Re-type Password:*
-                    <input type="password" name="retypePassword" id="retypePassword" onChange={handleRetypePasswordChange} />
-                </label>
-                <label style={{ display: 'block' }}>
-                    Role:*
-                    <select name="role" id="role" onChange={handleRoleChange}>
-                        <option value="">Select a role</option>
-                        <option value="Site Manager">Site Manager</option>
-                        <option value="Store Manager">Store Manager</option>
-                    </select>
-                </label>
-                <div style={{ color: 'red' }}>{errorMessage}</div>
-                <button type="submit">Submit</button>
-                <br></br>
-                <Link to="/login">Already have an account? Login</Link>
-            </form>
+  return (
+    <div className="container">
+      <center>
+        <h1>Sign Up</h1>
+      </center>
+      <form>
+        <div className="form-group">
+          <label htmlFor="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
         </div>
-    );
+        <div className="form-group">
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="retypePassword">Retype Password:</label>
+          <input
+            type="password"
+            id="retypePassword"
+            name="retypePassword"
+            value={retypePassword}
+            onChange={(e) => setRetypePassword(e.target.value)}
+            required
+          />
+          <div className="error-message" id="errorMessages">
+            {errorMessages.map((message, index) => (
+              <div key={index}>{message}</div>
+            ))}
+          </div>
+        </div>
+        <input type="hidden" name="uid" id="uid" />
+        <div className="form-group">
+          <label htmlFor="role">Role:</label>
+          <select
+            id="role"
+            name="role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+          >
+            <option value="Site Manager">Site Manager</option>
+            <option value="Store Manager">Store Manager</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <input type="text" name="result" value={result} readOnly hidden />
+        </div>
+        <div className="form-group">
+          <button type="button" onClick={handleClick}>
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 }
