@@ -1,0 +1,95 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+
+export function SignUp() {
+  //const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('user'); // Initialize role as 'user'
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      alert("Passwords don't match");
+      return;
+    }
+
+    const userData = {
+      UserID: Math.random().toString(36).substring(2, 15),
+      Username: username,
+      Password: password,
+      Role: role, // Use the selected role
+    };
+
+    try {
+      const response = await fetch('/components/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.status === 200) {
+        alert('User created successfully');
+      } else {
+        const data = await response.json();
+        alert(`Error creating user: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
+      alert('Error creating user');
+    }
+  };
+
+  return (
+    <div style={{ textAlign: 'center' }}>
+      <h1>Sign Up</h1>
+      <form style={{ display: 'inline-block', textAlign: 'left' }} onSubmit={handleSubmit}>
+        <label style={{ display: 'block' }}>
+          Username:*
+          <input
+            type="text"
+            name="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </label>
+        <label style={{ display: 'block' }}>
+          Password:*
+          <input
+            type="password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
+        <label style={{ display: 'block' }}>
+          Re-type Password:*
+          <input
+            type="password"
+            name="confirmPassword"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </label>
+        <label style={{ display: 'block' }}>
+          Role:*
+          <select
+            name="role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+          >
+            <option value="siteManager">Site Manager</option>
+            <option value="storeManager">Store Manager</option>
+          </select>
+        </label>
+        <button type="submit">Submit</button>
+        <br></br>
+        <Link to="/login">Already have an account? Login</Link>
+      </form>
+    </div>
+  );
+}

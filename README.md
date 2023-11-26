@@ -68,3 +68,8 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# k2-ez-consignment
+
+
+# SITEMGT PREFIX FOR FUNCTIONS TIED TO SITE MANAGER FUNCTIONALITY 
+# STOREMGT PREFIX FOR FUNCTIONS TIED TO STORE MANAGEMENT FUNCTIONALITY

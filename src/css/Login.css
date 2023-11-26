@@ -1,0 +1,73 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Aligns to the top */
+    height: 100vh;
+    padding-top: 80px; /* Same top margin as signup form */
+    background-color: #f4f4f4; /* Same as signup form */
+}
+
+.login-form {
+    max-width: 400px; /* Same as signup form */
+    margin: 0 auto; /* Centered horizontally */
+    padding: 80px; /* Same as signup form */
+    background-color: white; /* Different from signup for contrast, adjust if needed */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Same as signup form */
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px; /* Same as signup form */
+}
+
+.form-group {
+    margin-bottom: 15px; /* Same as signup form */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.login-input {
+    width: 100%;
+    padding: 10px; /* Same as signup form */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.login-button {
+    width: 100%;
+    padding: 10px; /* Same as signup form */
+    background-color: #0056b3; /* Same as signup form */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px; /* Same as signup form */
+}
+
+.login-button:hover {
+    background-color: #003d82; /* Same as signup form */
+}
+
+.signup-link {
+    display: block;
+    margin-top: 20px;
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.signup-link:hover {
+    color: #0056b3;
+}
+
+.login-error {
+    color: red;
+    margin-top: 5px; /* Same as signup form */
+}
