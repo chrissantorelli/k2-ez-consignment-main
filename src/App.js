@@ -19,6 +19,7 @@ import { ReportTotalInventory } from './pages/sm/ReportTotalInventory';
 import ListStores from './pages/sm/listStores';
 import { RemoveProduct } from './pages/so/removeProduct';
 import ListStoresProducts from './pages/sm/ListStoresProducts';
+import IterationTwo from './pages/IterationTwo';
 
 function App() {
   const location = useLocation();  
@@ -38,6 +39,7 @@ function App() {
             <>
               <li><Link to="/login">Login</Link></li>
               <li><Link to="/signup">Sign Up</Link></li>
+              <li><Link to="/iterationtwo">Iteration Two</Link></li>
             </>
           )}
         </ul>
@@ -69,6 +71,9 @@ function App() {
         <Route path="/so/add-computer" element={<AddComputer />} />
         <Route path="/so/create-store" element={<CreateStore />} />
         <Route path="/so/generate-inventory" element={<GenerateInventory />} />
+
+        <Route path="/iterationtwo" element={<IterationTwo />} />
+
 
 
 
