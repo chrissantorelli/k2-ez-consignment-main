@@ -13,6 +13,9 @@ import { AddComputer } from './pages/so/AddComputer';
 import { CreateStore } from './pages/so/CreateStore';
 import { GenerateInventory } from './pages/so/GenerateInventory';
 
+import { ReportDollarBalance } from './pages/sm/ReportDollarBalance';
+import { DollarReportOfSiteInventoryByVirtualStore } from './pages/sm/DollarReportOfSiteInventoryByVirtualStore';
+import { ReportTotalInventory } from './pages/sm/ReportTotalInventory';
 
 function App() {
   const location = useLocation();  
@@ -47,6 +50,14 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/sm/generate-report-total-inventory" element={<AddTotalInventory />} />
         <Route path="/sm/remove-store" element={<RemoveStore />} />
+
+        <Route path="/sm/report-dollar-balance" element={<ReportDollarBalance /> } />
+        <Route path="/sm/report-site-inventory-by-virtual-store" element={<DollarReportOfSiteInventoryByVirtualStore />} />
+        <Route path="/sm/report-total-inventory" element={<ReportTotalInventory />} />
+
+
+
+
         <Route path="/so/add-computer" element={<AddComputer />} />
         <Route path="/so/create-store" element={<CreateStore />} />
         <Route path="/so/generate-inventory" element={<GenerateInventory />} />
