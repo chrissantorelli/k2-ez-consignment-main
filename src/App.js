@@ -16,6 +16,9 @@ import { GenerateInventory } from './pages/so/GenerateInventory';
 import { ReportDollarBalance } from './pages/sm/ReportDollarBalance';
 import { DollarReportOfSiteInventoryByVirtualStore } from './pages/sm/DollarReportOfSiteInventoryByVirtualStore';
 import { ReportTotalInventory } from './pages/sm/ReportTotalInventory';
+import ListStores from './pages/sm/listStores';
+import { RemoveProduct } from './pages/so/removeProduct';
+import ListStoresProducts from './pages/sm/ListStoresProducts';
 
 function App() {
   const location = useLocation();  
@@ -56,11 +59,19 @@ function App() {
         <Route path="/sm/report-total-inventory" element={<ReportTotalInventory />} />
 
 
+        <Route path="/c/list-stores" element={<ListStores />} />
+        <Route path="/c/list-stores-products" element={<ListStoresProducts />} />
 
+
+
+        <Route path="/so/remove-product" element={<RemoveProduct />} />
 
         <Route path="/so/add-computer" element={<AddComputer />} />
         <Route path="/so/create-store" element={<CreateStore />} />
         <Route path="/so/generate-inventory" element={<GenerateInventory />} />
+
+
+
       </Routes>
     </>
   );
