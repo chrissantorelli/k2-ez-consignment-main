@@ -1,15 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export function ModifyPrice() {
+  const [storeName, setStoreName] = useState('');
+  const [storeOptions, setStoreOptions] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [productId, setProductId] = useState('');
   const [newPrice, setNewPrice] = useState('');
   const [errorMessages, setErrorMessages] = useState([]);
   const [result, setResult] = useState('');
 
-  function handleClick() {
+  useEffect(() => {
+    // Retrieve the username from local storage
+    const username = localStorage.getItem('username');
+
+    if (!username) {
+      console.error('Username not found in local storage');
+      return;
+    }
+
+    fetch('https://v9ka10czi7.execute-api.us-east-1.amazonaws.com/initial/GetStoresFromUserMattResource', {
+      method: 'POST',
+      body: JSON.stringify({ username }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+    .then(response => response.json())
+    .then(data => {
+      const stores = JSON.parse(data.body);
+      setStoreOptions(stores.map(store => store.StoreName));
+    })
+    .catch(error => console.error('Error fetching store names:', error));
+  }, []);
+
+  useEffect(() => {
+    if (storeName) {
+      fetch('https://y4c3y3jhe0.execute-api.us-east-1.amazonaws.com/listastoresproductsstage/listastoresproductsresource', {
+        method: 'POST',
+        body: JSON.stringify({ "STORE_NAME" : storeName }),
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .then(response => response.json())
+      .then(data => {
+        const products = JSON.parse(data.body);
+        setSelectedProducts(products);
+      })
+      .catch(error => console.error('Error fetching products:', error));
+    }
+  }, [storeName]);
+
+  const handleStoreChange = (e) => {
+    setStoreName(e.target.value);
+    setProductId(''); // Reset product ID when changing stores
+  };
+
+  const handleProductChange = (e) => {
+    setProductId(e.target.value);
+  };
+
+  const handleClick = () => {
     // Validation checks
     if (!productId) {
-      setErrorMessages(['Please enter the Product ID.']);
+      setErrorMessages(['Please select a Product ID.']);
       return;
     }
     if (!newPrice) {
@@ -19,39 +69,52 @@ export function ModifyPrice() {
 
     setErrorMessages([]);
 
-    // Replace with your Lambda function's endpoint
     fetch('https://sk9zhtxtfh.execute-api.us-east-1.amazonaws.com/initial/modifyprice', {
       method: 'POST',
       body: JSON.stringify({ ProductID: productId, NewPrice: newPrice }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     })
-      .then((response) => response.json())
-      .then((data) => {
-        setResult(data.body);
-        alert(`Price for product with ProductID '${productId}' updated successfully to '${newPrice}'.`);
-      })
-      .catch((error) => {
-        alert('Error updating product price');
-      });
-  }
+    .then(response => response.json())
+    .then(data => {
+      setResult(data.body);
+      alert(`Price for product with ProductID '${productId}' updated successfully to '${newPrice}'.`);
+    })
+    .catch(error => {
+      alert('Error updating product price');
+    });
+  };
 
   return (
     <div className="container">
-      <center>
-        <h1>Modfiy Price</h1>
-      </center>
+      <center><h1>Modify Product Price</h1></center>
       <form>
         <div className="form-group">
+          <label htmlFor="storeName">Store Name:</label>
+          <select
+            id="storeName"
+            value={storeName}
+            onChange={handleStoreChange}
+            required
+          >
+            <option value="">Select Store</option>
+            {storeOptions.map((store, index) => (
+              <option key={index} value={store}>{store}</option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
           <label htmlFor="productId">Product ID:</label>
-          <input
-            type="text"
+          <select
             id="productId"
             value={productId}
-            onChange={(e) => setProductId(e.target.value)}
+            onChange={handleProductChange}
             required
-          />
+          >
+            <option value="">Select Product</option>
+            {selectedProducts.map((product, index) => (
+              <option key={index} value={product.ProductID}>{product.ProductID}</option>
+            ))}
+          </select>
         </div>
         <div className="form-group">
           <label htmlFor="newPrice">New Price:</label>
@@ -73,6 +136,7 @@ export function ModifyPrice() {
             Update Price
           </button>
         </div>
+        
       </form>
       {result && (
         <div className="result-message">
