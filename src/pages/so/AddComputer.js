@@ -17,8 +17,8 @@ export function AddComputer() {
 
   useEffect(() => {
     // Retrieve the username from local storage
-    const username = "storeowner"; // Replace 'username' with the actual key
-  
+    const username = localStorage.getItem('username'); 
+    
     // Check if username exists
     if (!username) {
       console.error('Username not found in local storage');
