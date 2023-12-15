@@ -17,6 +17,10 @@ export function Shop() {
   const [selectedGraphics, setSelectedGraphics] = useState('');
 
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+
 
   useEffect(() => {
     fetch('https://trtz7au832.execute-api.us-east-1.amazonaws.com/initialStage/GetStoreNamesMattChrisResource', {
@@ -64,23 +68,24 @@ export function Shop() {
     });
   };
 
+  const handleBuyNowClick = (product) => {
+    console.log("Buy Now Clicked!");
+  };
+
+
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
   const handleBuyClick = (product) => {
-    // Display product information in the console
-    console.log('Product Information:');
-    console.log('Store Name:', product.StoreName);
-    console.log('Product Name:', product.ProductName);
-    console.log('Graphics:', product.Graphics);
-    console.log('Memory:', product.Memory);
-    console.log('Price:', product.Price);
-    console.log('Processor:', product.Processor);
-    console.log('Processor Gen:', product.ProcessorGen);
-    console.log('Storage Size:', product.StorageSize);
+    setSelectedProduct(product);
+    setIsModalOpen(true);
   };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
 
   const handlePriceChange = (event) => {
     setSelectedPrice(event.target.value);
@@ -545,8 +550,28 @@ if(Array.isArray(products)) {
     ))}
   </ul>
 </div>
-
-
+{isModalOpen && (
+  <div style={{
+    position: 'fixed', // Fixed position
+    top: '50%', // Center vertically
+    left: '50%', // Center horizontally
+    transform: 'translate(-50%, -50%)', // Adjust for centering
+    backgroundColor: 'white', // Background color
+    padding: '20px', // Padding
+    border: '1px solid black', // Border
+    zIndex: 1000, // Ensure it's on top
+  }}>
+    <div>
+      <h2>Product Details</h2>
+      <p><strong>Store Name:</strong> {selectedProduct?.StoreName}</p>
+      <p><strong>Product Name:</strong> {selectedProduct?.ProductName}</p>
+      {/* Include other product details as needed */}
+      <p><strong>Price:</strong> ${selectedProduct?.Price}</p>
+      <button onClick={handleBuyNowClick}>Buy Now!</button>
+      <button onClick={handleCloseModal}>Close</button>
+    </div>
+  </div>
+)}
     </div>
   );
               }  
