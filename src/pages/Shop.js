@@ -10,7 +10,6 @@ export function Shop() {
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
 
-
   const [selectedPrice, setSelectedPrice] = useState('');
   const [selectedMemory, setSelectedMemory] = useState('');
   const [selectedStorage, setSelectedStorage] = useState('');
@@ -56,6 +55,7 @@ export function Shop() {
       .then((response) => response.json())
       .then((data) => {
         const parsedData = JSON.parse(data.body);
+        //console.log(data);
         const storeNames = parsedData.storeNames;
         setStoreNames(storeNames);
       })
@@ -72,12 +72,54 @@ export function Shop() {
       })
       .then((response) => response.json())
       .then((data) => {
+        //console.log(data);
         setProducts(JSON.parse(data.body));
       })
       .catch((error) => {
         console.error('Error fetching products:', error);
       });
   }, []);
+
+
+  const buyProduct = async (productId, customerLat, customerLon) => {
+    const data = {
+      productId: parseInt(productId, 10),
+      customerLat: parseFloat(customerLat),
+      customerLon: parseFloat(customerLon)
+    };
+  
+    try {
+      const response = await fetch('https://lpsjpvp5a2.execute-api.us-east-1.amazonaws.com/buyProductStage/buyProductResource', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const result = await response.json();
+      console.log('Success:', result);
+      // Handle the response further as needed
+      return result; // Returning the result for further processing
+    } catch (error) {
+      console.error('Error:', error);
+      // You might want to handle the error or throw it for the calling component to handle
+      throw error;
+    }
+  };
+  
+
+
+
+
+
+
+
+
 
   const handleStoreClick = (name) => {
     setSelectedStores((prevSelectedStores) => {
@@ -93,7 +135,14 @@ export function Shop() {
 
   const handleBuyNowClick = (product) => {
     console.log("Buy Now Clicked!");
+   // console.log(computerID)
     triggerConfetti();
+    let product_id = selectedProduct?.ProductID;
+    let user_lat = userLocation.lat;
+    let user_lon = userLocation.lon;
+    buyProduct(product_id, user_lat, user_lon);
+
+    setIsModalOpen(false);
   };
 
 
@@ -587,6 +636,7 @@ if(Array.isArray(products)) {
   }}>
     <div>
       <h2>Product Details</h2>
+      <p style={{display:"none"}}><strong>Product ID:</strong> {selectedProduct?.ProductID}</p>
       <p><strong>Store Name:</strong> {selectedProduct?.StoreName}</p>
       <p><strong>Product Name:</strong> {selectedProduct?.ProductName}</p>
       <p><strong>Price:</strong> ${selectedProduct?.Price}</p>
