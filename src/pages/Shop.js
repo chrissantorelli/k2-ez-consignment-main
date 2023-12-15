@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import placeholderImage from '../img/placeholder.png'
+import confetti from 'canvas-confetti';
+
 
 
 export function Shop() {
@@ -20,7 +22,28 @@ export function Shop() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  const [userLocation, setUserLocation] = useState({ lat: '', lon: '' });
 
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  };
+
+
+  useEffect(() => {
+    fetch('http://ip-api.com/json')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.lat && data.lon) {
+          setUserLocation({ lat: data.lat, lon: data.lon });
+        }
+      })
+      .catch(err => console.error('Error fetching location:', err));
+  }, []);
+  
 
   useEffect(() => {
     fetch('https://trtz7au832.execute-api.us-east-1.amazonaws.com/initialStage/GetStoreNamesMattChrisResource', {
@@ -70,6 +93,7 @@ export function Shop() {
 
   const handleBuyNowClick = (product) => {
     console.log("Buy Now Clicked!");
+    triggerConfetti();
   };
 
 
@@ -565,8 +589,8 @@ if(Array.isArray(products)) {
       <h2>Product Details</h2>
       <p><strong>Store Name:</strong> {selectedProduct?.StoreName}</p>
       <p><strong>Product Name:</strong> {selectedProduct?.ProductName}</p>
-      {/* Include other product details as needed */}
       <p><strong>Price:</strong> ${selectedProduct?.Price}</p>
+      <p><strong>User Location (Approx.):</strong> Lat: {userLocation.lat}, Lon: {userLocation.lon}</p>
       <button onClick={handleBuyNowClick}>Buy Now!</button>
       <button onClick={handleCloseModal}>Close</button>
     </div>
