@@ -41,6 +41,7 @@ export function ModifyPrice() {
       .then(response => response.json())
       .then(data => {
         const products = JSON.parse(data.body);
+        console.log(products);
         setSelectedProducts(products);
       })
       .catch(error => console.error('Error fetching products:', error));
@@ -112,7 +113,7 @@ export function ModifyPrice() {
           >
             <option value="">Select Product</option>
             {selectedProducts.map((product, index) => (
-              <option key={index} value={product.ProductID}>{product.ProductID}</option>
+              <option key={index} value={product.ProductID}>{product.ProductID + " " + product.ProductName + " $" + product.Price}</option>
             ))}
           </select>
         </div>
