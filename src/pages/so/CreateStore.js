@@ -16,11 +16,18 @@ export function CreateStore() {
   function handleClick() {
     const generatedStoreID = generateRandomStoreID();
 
+    const username = localStorage.getItem('username');
+
+    // if (username) {
+    //   console.log(username);
+    // }
+
     const data = {
       uid: generatedStoreID,
       storename: storeName,
       lat: latitude,
       lon: longitude,
+      username: username,
     };
 // these have to match the var names in your lambda
     //console.log(data);

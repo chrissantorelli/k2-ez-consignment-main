@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 
 export function AddComputer() {
   // State variables for each form field
@@ -24,6 +25,47 @@ export function AddComputer() {
   function generateRandomProductId() {
     return Math.floor(1000 + Math.random() * 9000);
   }
+
+  const [storeNames, setStoreNames] = useState([]);
+
+  // ... [existing code for dropdown options and generateRandomProductId function]
+
+  // Function to fetch store names from API
+  useEffect(() => {
+    // Retrieve the username from local storage
+    const username = localStorage.getItem('username'); // Replace 'username' with the actual key
+
+    // Check if username exists
+    if (!username) {
+      console.error('Username not found in local storage');
+      return;
+    }
+
+    // API request
+    fetch('https://v9ka10czi7.execute-api.us-east-1.amazonaws.com/initial/GetStoresFromUserMattResource', {
+      method: 'POST',
+      body: JSON.stringify({ username: username }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+            // Parse the body string to JSON
+            const storesData = JSON.parse(data.body);
+
+            // Extract the StoreName values and set them to the storeNames state
+            const stores = storesData.map(store => store.StoreName);
+            setStoreNames(stores);
+    })
+    .catch(error => console.error('Error fetching store names:', error));
+  }, []);
+
+  // ... [existing code for handleClick function and form]
+
+
+
+
 
   // Function to handle the onClick event of the Add to Inventory button
   function handleClick() {

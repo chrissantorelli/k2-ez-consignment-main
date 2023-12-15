@@ -11,6 +11,12 @@ export function Dashboard() {
 
   // Extract attributes from the parsed body
   const username = body?.user?.Username;
+
+  if (username) {
+    localStorage.setItem('username', username);
+}
+
+
   const userRole = body?.user?.Role;
 
   return (
