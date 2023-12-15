@@ -23,6 +23,10 @@ export function Shop() {
 
   const [userLocation, setUserLocation] = useState({ lat: '', lon: '' });
 
+
+  const [purchaseMade, setPurchaseMade] = useState(false);
+
+
   const triggerConfetti = () => {
     confetti({
       particleCount: 100,
@@ -81,6 +85,62 @@ export function Shop() {
   }, []);
 
 
+  // const buyProduct = async (productId, customerLat, customerLon) => {
+  //   const data = {
+  //     productId: parseInt(productId, 10),
+  //     customerLat: parseFloat(customerLat),
+  //     customerLon: parseFloat(customerLon)
+  //   };
+  
+  //   try {
+  //     const response = await fetch('https://lpsjpvp5a2.execute-api.us-east-1.amazonaws.com/buyProductStage/buyProductResource', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(data),
+  //     });
+  
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+  
+  //     const result = await response.json();
+  //     console.log('Success:', result);
+  //     // Handle the response further as needed
+  //     return result; // Returning the result for further processing
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //     // You might want to handle the error or throw it for the calling component to handle
+  //     throw error;
+  //   }
+  // };
+  
+  useEffect(() => {
+    fetch('https://rqwgin3dfa.execute-api.us-east-1.amazonaws.com/initialStage/displayAllProductsResource', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      setProducts(JSON.parse(data.body));
+    })
+    .catch((error) => {
+      console.error('Error fetching products:', error);
+    });
+  }, [purchaseMade]); // Dependency on purchaseMade
+
+  // const triggerConfetti = () => {
+  //   confetti({
+  //     particleCount: 100,
+  //     spread: 70,
+  //     origin: { y: 0.6 }
+  //   });
+  // };
+
   const buyProduct = async (productId, customerLat, customerLon) => {
     const data = {
       productId: parseInt(productId, 10),
@@ -103,16 +163,13 @@ export function Shop() {
   
       const result = await response.json();
       console.log('Success:', result);
-      // Handle the response further as needed
-      return result; // Returning the result for further processing
+      triggerConfetti();
+      setPurchaseMade(prev => !prev); // Toggle purchaseMade to refresh the product list
     } catch (error) {
       console.error('Error:', error);
-      // You might want to handle the error or throw it for the calling component to handle
       throw error;
     }
   };
-  
-
 
 
 
