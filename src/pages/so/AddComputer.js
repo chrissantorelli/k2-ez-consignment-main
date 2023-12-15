@@ -13,6 +13,33 @@ export function AddComputer() {
   const [storeName, setStoreName] = useState('');
   const [errorMessages, setErrorMessages] = useState([]);
   const [result, setResult] = useState('');
+  const [storeOptions, setStoreOptions] = useState([]);
+
+  useEffect(() => {
+    // Retrieve the username from local storage
+    const username = localStorage.getItem('username'); 
+    
+    // Check if username exists
+    if (!username) {
+      console.error('Username not found in local storage');
+      return;
+    }
+  
+    // API request
+    fetch('https://v9ka10czi7.execute-api.us-east-1.amazonaws.com/initial/GetStoresFromUserMattResource', {
+      method: 'POST',
+      body: JSON.stringify({ username: username }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      const stores = JSON.parse(data.body);
+      setStoreOptions(stores.map(store => store.StoreName));
+    })
+    .catch(error => console.error('Error fetching store names:', error));
+  }, []);
 
   // Dropdown options
   const graphicsOptions = ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080", "AMD Radeon Pro W6300", "AMD Radeon Pro W6400", "Intel Integrated Graphics", "Intel UHD Graphics 730", "Intel UHD Graphics 770"];
@@ -188,13 +215,17 @@ export function AddComputer() {
 
         <div className="form-group">
           <label htmlFor="storeName">Store Name:</label>
-          <input
-            type="text"
-            id="storeName"
-            value={storeName}
-            onChange={(e) => setStoreName(e.target.value)}
+          <select 
+            id="storeName" 
+            value={storeName} 
+            onChange={(e) => setStoreName(e.target.value)} 
             required
-          />
+          >
+            <option value="">Select Store</option>
+            {storeOptions.map((option, index) => (
+              <option key={index} value={option}>{option}</option>
+            ))}
+          </select>
         </div>
 
         {/* Display error messages if any */}
