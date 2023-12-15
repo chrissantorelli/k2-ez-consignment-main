@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import placeholderImage from '../img/placeholder.png'
 import confetti from 'canvas-confetti';
-
+import { Link } from 'react-router-dom';
 
 
 export function Shop() {
@@ -16,6 +16,8 @@ export function Shop() {
   const [selectedProcessor, setSelectedProcessor] = useState('');
   const [selectedProcessorGen, setSelectedProcessorGen] = useState('');
   const [selectedGraphics, setSelectedGraphics] = useState('');
+  const [selectedForComparison, setSelectedForComparison] = useState([]);
+
 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -140,6 +142,17 @@ export function Shop() {
   //     origin: { y: 0.6 }
   //   });
   // };
+  const handleCompareChange = (product, isChecked) => {
+    setSelectedForComparison(prev => {
+      if (isChecked) {
+        // If the checkbox is checked, add the product to the array
+        return [...prev, product];
+      } else {
+        // If the checkbox is unchecked, remove the product from the array
+        return prev.filter(p => p.ProductID !== product.ProductID);
+      }
+    });
+  };
 
   const buyProduct = async (productId, customerLat, customerLon) => {
     const data = {
@@ -170,13 +183,6 @@ export function Shop() {
       throw error;
     }
   };
-
-
-
-
-
-
-
 
   const handleStoreClick = (name) => {
     setSelectedStores((prevSelectedStores) => {
@@ -390,7 +396,7 @@ if(Array.isArray(products)) {
   const filteredStoreNames = storeNames.filter((name) =>
     name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+  console.log("selectedForComparison",selectedForComparison);
   return (
     <div>
       <h1>Shop</h1>
@@ -613,9 +619,27 @@ if(Array.isArray(products)) {
 
 </div>
       </div>
-      
+
 {/* Products Section */}
 <div>
+  {/* Compare Button - Visible when 2 or more products are selected */}
+{selectedForComparison.length >= 2 && (
+  <Link to={{ pathname: "/compare", state: { products: selectedForComparison } }}>
+    <button
+      style={{
+        marginTop: '20px',
+        padding: '10px 20px',
+        background: '#007bff',
+        color: '#fff',
+        borderRadius: '5px',
+        border: 'none',
+        cursor: 'pointer',
+      }}
+    >
+      Compare Products
+    </button>
+  </Link>
+)}
   <h2>Products:</h2>
   <ul style={{ listStyleType: 'none', padding: 20 }}>
     {filteredProducts.map((product, index) => (
@@ -660,7 +684,6 @@ if(Array.isArray(products)) {
             Buy
           </button>
         </div>
-
         {/* Product Image */}
         <div> {/* Flex item for image */}
           <img
@@ -668,12 +691,14 @@ if(Array.isArray(products)) {
             alt="Product Placeholder"
             style={{ width: '150px', height: '150px' }}
           />
-                  <div>
+            {/* Compare Checkbox */}
+            <div>
         <input
           type="checkbox"
-          id="compareCheckbox"
+          id={`compareCheckbox-${product.ProductID}`}
+          onChange={(e) => handleCompareChange(product, e.target.checked)}
         />
-        <label htmlFor="compareCheckbox">Compare</label>
+        <label htmlFor={`compareCheckbox-${product.ProductID}`}>Compare</label>
       </div>
         </div>
       </li>
