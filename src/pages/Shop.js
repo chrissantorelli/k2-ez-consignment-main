@@ -1,202 +1,368 @@
 import React, { useState, useEffect } from 'react';
-import '../css/Shop.css'; // Ensure you have this CSS file for styles
 
 export function Shop() {
-    const [items, setItems] = useState([]); // State for all items
-    const [filteredItems, setFilteredItems] = useState([]); // State for filtered items
-    const [filter, setFilter] = useState({}); // State for filter criteria
-    
-    // Sample items data (Replace with real data fetching logic)
-    useEffect(() => {
-        const sampleItems = [
-            {
-                id: 1,
-                name: 'Gaming Powerhouse Laptop',
-                price: 2200,
-                memory: '32GB',
-                storage: '1TB',
-                processor: 'Intel',
-                processorGen: '13th Gen Intel',
-                graphics: 'NVIDIA'
-            },
-            {
-                id: 2,
-                name: 'Budget Friendly Notebook',
-                price: 500,
-                memory: '8GB',
-                storage: '256GB',
-                processor: 'Intel',
-                processorGen: '11th Gen Intel',
-                graphics: 'Intel'
-            },
-            {
-                id: 3,
-                name: 'Professional Workstation',
-                price: 1500,
-                memory: '16GB',
-                storage: '512GB',
-                processor: 'AMD',
-                processorGen: 'AMD Ryzen 7000 Series',
-                graphics: 'AMD'
-            },
-            {
-                id: 4,
-                name: 'Ultra Gaming Desktop',
-                price: 3000,
-                memory: '32GB',
-                storage: '2TB',
-                processor: 'AMD',
-                processorGen: 'AMD Ryzen 6000 Series',
-                graphics: 'NVIDIA'
-            },
-            {
-                id: 5,
-                name: 'Portable Business Laptop',
-                price: 800,
-                memory: '16GB',
-                storage: '1TB',
-                processor: 'Intel',
-                processorGen: '12th Gen Intel',
-                graphics: 'Intel'
-            },
-            {
-                id: 6,
-                name: 'Entry-Level Gaming Laptop',
-                price: 1000,
-                memory: '8GB',
-                storage: '512GB',
-                processor: 'Intel',
-                processorGen: '11th Gen Intel',
-                graphics: 'NVIDIA'
-            },
-            {
-                id: 7,
-                name: 'High Performance Notebook',
-                price: 1800,
-                memory: '16GB',
-                storage: '1TB',
-                processor: 'Intel',
-                processorGen: '13th Gen Intel',
-                graphics: 'AMD'
-            },
-            {
-                id: 8,
-                name: 'Multimedia Power Laptop',
-                price: 1200,
-                memory: '8GB',
-                storage: '256GB',
-                processor: 'AMD',
-                processorGen: 'AMD Ryzen 6000 Series',
-                graphics: 'Intel'
-            }
-        ];
-        
-        setItems(sampleItems);
-        setFilteredItems(sampleItems);
-    }, []);
-    
-    // Handle filter changes
-    const handleFilterChange = (e) => {
-        const { name, value } = e.target;
-        setFilter(prev => ({ ...prev, [name]: value }));
-    };
-    
-    // Function to check if an item meets the filter criteria
-    const filterItem = (item) => {
-        if (filter.price && !priceRangeMatches(filter.price, item.price)) return false;
-        if (filter.memory && filter.memory !== item.memory) return false;
-        if (filter.storage && !storageMatches(filter.storage, item.storage)) return false;
-        if (filter.processor && filter.processor !== item.processor) return false;
-        if (filter.processorGen && filter.processorGen !== item.processorGen) return false;
-        if (filter.graphics && filter.graphics !== item.graphics) return false;
-    
-        return true;
-    };
-    
-    // Function to check if price is within the selected range
-    const priceRangeMatches = (range, price) => {
-        switch (range) {
-            case "2001+": return price >= 2001;
-            case "1501-2000": return price >= 1501 && price <= 2000;
-            // ... other ranges
-            default: return true;
-        }
-    };
-    
-    // Function to check if storage matches the filter
-    const storageMatches = (filterStorage, itemStorage) => {
-        // Convert storage to comparable units and compare
-        // Example implementation, adjust as needed
-    };
-    
-    // Apply filters when filter state changes
-    useEffect(() => {
-        const filtered = items.filter(filterItem);
-        setFilteredItems(filtered);
-    }, [filter, items]);
-    
+  const [storeNames, setStoreNames] = useState([]);
+  const [selectedStores, setSelectedStores] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [products, setProducts] = useState([]);
 
-    return (
-        <div className="shop-container">
-            <h1>Shop</h1>
-            <div className="filters">
-                {/* Price Filter */}
-                <select name="price" onChange={handleFilterChange}>
-                    <option value="">Select Price Range</option>
-                    <option value="2001+">$2,001 or more</option>
-                    <option value="1501-2000">$1,501 - $2,000</option>
-                    {/* ... other price options */}
-                </select>
 
-                {/* Memory Filter */}
-                <select name="memory" onChange={handleFilterChange}>
-                    <option value="">Select Memory (RAM)</option>
-                    <option value="32GB+">32 GB or more</option>
-                    {/* ... other memory options */}
-                </select>
+  const [selectedPrice, setSelectedPrice] = useState('');
+  const [selectedMemory, setSelectedMemory] = useState('');
+  const [selectedStorage, setSelectedStorage] = useState('');
+  const [selectedProcessor, setSelectedProcessor] = useState('');
+  const [selectedProcessorGen, setSelectedProcessorGen] = useState('');
+  const [selectedGraphics, setSelectedGraphics] = useState('');
 
-                {/* Storage Size Filter */}
-                <select name="storage" onChange={handleFilterChange}>
-                    <option value="">Select Storage Size</option>
-                    <option value="2TB+">2 TB or more</option>
-                    {/* ... other storage options */}
-                </select>
 
-                {/* Processor Filter */}
-                <select name="processor" onChange={handleFilterChange}>
-                    <option value="">Select Processor</option>
-                    <option value="all-intel">All Intel Processors</option>
-                    {/* ... other processor options */}
-                </select>
 
-                {/* Processor Generation Filter */}
-                <select name="processorGen" onChange={handleFilterChange}>
-                    <option value="">Select Processor Generation</option>
-                    <option value="13th-gen-intel">13th Gen Intel</option>
-                    {/* ... other processor generation options */}
-                </select>
 
-                {/* Graphics Filter */}
-                <select name="graphics" onChange={handleFilterChange}>
-                    <option value="">Select Graphics</option>
-                    <option value="all-nvidia">All NVIDIA Graphics</option>
-                    {/* ... other graphics options */}
-                </select>
-            </div>
-            <div className="items">
-                {filteredItems.map(item => (
-                    <div key={item.id} className="item">
-                        <h3>{item.name}</h3>
-                        <p>Price: ${item.price}</p>
-                        <p>Memory: {item.memory}</p>
-                        <p>Storage: {item.storage}</p>
-                        <p>Processor: {item.processor}</p>
-                        <p>Processor Generation: {item.processorGen}</p>
-                        <p>Graphics: {item.graphics}</p>
-                        <button className="buy-button">Buy</button>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+  useEffect(() => {
+    fetch('https://trtz7au832.execute-api.us-east-1.amazonaws.com/initialStage/GetStoreNamesMattChrisResource', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const parsedData = JSON.parse(data.body);
+        const storeNames = parsedData.storeNames;
+        setStoreNames(storeNames);
+      })
+      .catch((error) => {
+        console.error('Error fetching store names:', error);
+      });
+
+    fetch('https://rqwgin3dfa.execute-api.us-east-1.amazonaws.com/initialStage/displayAllProductsResource', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        setProducts(JSON.parse(data.body));
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  }, []);
+
+  const handleStoreClick = (name) => {
+    setSelectedStores((prevSelectedStores) => {
+      if (prevSelectedStores.includes(name)) {
+        // If the store is already selected, remove it
+        return prevSelectedStores.filter((store) => store !== name);
+      } else {
+        // If the store is not selected, add it
+        return [...prevSelectedStores, name];
+      }
+    });
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleBuyClick = (product) => {
+    // Display product information in the console
+    console.log('Product Information:');
+    console.log('Store Name:', product.StoreName);
+    console.log('Product Name:', product.ProductName);
+    console.log('Graphics:', product.Graphics);
+    console.log('Memory:', product.Memory);
+    console.log('Price:', product.Price);
+    console.log('Processor:', product.Processor);
+    console.log('Processor Gen:', product.ProcessorGen);
+    console.log('Storage Size:', product.StorageSize);
+  };
+
+
+  const handlePriceChange = (event) => {
+    setSelectedPrice(event.target.value);
+  };
+
+  const handleMemoryChange = (event) => {
+    console.log(event.target.value);
+    setSelectedMemory(event.target.value);
+  }
+
+  const handleStorageChange = (event) => {
+    console.log(event.target.value);
+    setSelectedStorage(event.target.value);
+  }
+
+  const handleProcessorChange = (event) => {
+    console.log(event.target.value);
+    setSelectedProcessor(event.target.value);
+  }
+
+
+  const handleProcessorGenChange = (event) => {
+    console.log(event.target.value);
+    setSelectedProcessorGen(event.target.value);
+  }
+
+
+  const handleGraphicsChange = (event) => {
+    console.log(event.target.value);
+    setSelectedGraphics(event.target.value);
+  }
+
+
+
+  function isPriceInRange(price, selectedPriceRange) {
+    let minPrice = 0, maxPrice = Infinity;
+
+    switch(selectedPriceRange) {
+      case "$2,001 or more":
+        minPrice = 2001;
+        break;
+      case "$1,501 - $2,000":
+        minPrice = 1501;
+        maxPrice = 2000;
+        break;
+      case "$1,001 - $1,500":
+        minPrice = 1001;
+        maxPrice = 1500;
+        break;
+      case "$501 - $1000":
+        minPrice = 501;
+        maxPrice = 1000;
+        break;
+      case "$500 or less":
+        maxPrice = 500;
+        break;
+      default:
+        return true; 
+    }
+
+    return price >= minPrice && price <= maxPrice;
+  }
+
+
+  function isMemoryInRange(memory, selectedMemoryRange) {
+    let minMemory = 0, maxMemory = Infinity;
+
+    switch(selectedMemoryRange) {
+      case "32 GB or more":
+        minMemory = 32;
+        break;
+      case "16 GB":
+        minMemory = 16;
+        maxMemory = 32;
+        break;
+      case "8 GB":
+        minMemory = 8;
+        maxMemory = 16;
+        break;
+      case "4GB or less":
+        maxMemory = 4;
+        break;
+      default:
+        return true; 
+    }
+
+    return memory >= minMemory && memory <= maxMemory;
+  }
+
+
+  // THIS IS WHERE YOU ARE WORKING 
+
+
+  
+let filteredProducts = [];
+
+if(Array.isArray(products)) {
+  filteredProducts = products.filter((product) => {
+    const isStoreSelected = selectedStores.length === 0 || selectedStores.includes(product.StoreName);
+    const isWithinPriceRange = isPriceInRange(product.Price, selectedPrice);
+    const isWithinMemoryRange = isMemoryInRange(product.Memory, selectedMemory);
+    return isStoreSelected && isWithinPriceRange && isWithinMemoryRange;
+  });
 }
+
+// ... (rest of the component)
+
+
+
+  
+
+
+
+  
+  
+
+  // Filter store names based on the search query
+  const filteredStoreNames = storeNames.filter((name) =>
+    name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div>
+      <h1>Shop</h1>
+      {/* Flex Container for Stores and Filters */}
+      <div style={{ display: 'flex' }}>
+        {/* Store Names Section */}
+        <div style={{ flex: 1, marginRight: 20 }}>
+     
+          <h2>Store Names:</h2>
+          <input
+            type="text"
+            placeholder="Search for a store..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            style={{
+              margin: '5px',
+              borderRadius: '1px',
+              border: 'none',
+            }}
+          />
+          <ul>
+            {filteredStoreNames.map((name, index) => (
+              <button
+                key={index}
+                onClick={() => handleStoreClick(name)}
+                style={{
+                  margin: '5px',
+                  padding: '10px 20px',
+                  background: selectedStores.includes(name) ? '#4caf50' : '#007bff',
+                  color: '#fff',
+                  borderRadius: '5px',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                {name}
+              </button>
+            ))}
+          </ul>
+        </div>
+  
+        {/* Filters Section */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
+
+            {/* Price Filter */}
+            <div style={{ flex: 1, margin: '10px' }}>
+              <h3>Price</h3>
+              {["$2,001 or more", "$1,501 - $2,000", "$1,001 - $1,500", "$501 - $1000", "$500 or less"].map((price, index) => (
+                <div key={index}>
+                  <input type="radio" id={`price-${index}`} name="price" value={price} onChange={handlePriceChange}/>
+                  <label htmlFor={`price-${index}`}>{price}</label>
+                </div>
+              ))}
+            </div>
+
+            {/* Memory Filter */}
+            <div style={{ flex: 1, margin: '10px' }}>
+              <h3>Memory (RAM)</h3>
+              {["32 GB or more", "16 GB", "8 GB", "4GB or less"].map((memory, index) => (
+                <div key={index}>
+                  <input type="radio" id={`memory-${index}`} name="memory" value={memory} onChange={handleMemoryChange} />
+                  <label htmlFor={`memory-${index}`}>{memory}</label>
+                </div>
+              ))}
+            </div>
+
+            {/* Storage Size Filter */}
+            <div style={{ flex: 1, margin: '10px' }}>
+              <h3>Storage Size</h3>
+              {["2 TB or more", "1 TB", "512 GB", "256 GB or less"].map((storage, index) => (
+                <div key={index}>
+                  <input type="radio" id={`storage-${index}`} name="storage" value={storage} onChange={handleStorageChange}/>
+                  <label htmlFor={`storage-${index}`}>{storage}</label>
+                </div>
+              ))}
+            </div>
+
+            {/* Processor Filter */}
+            <div style={{ flex: 1, margin: '10px' }}>
+              <h3>Processor</h3>
+              {["All Intel Processors", "All AMD Processors"].map((processor, index) => (
+                <div key={index}>
+                  <input type="radio" id={`processor-${index}`} name="processor" value={processor} onChange={handleProcessorChange}/>
+                  <label htmlFor={`processor-${index}`}>{processor}</label>
+                </div>
+              ))}
+            </div>
+
+            {/* Processor Generation Filter */}
+            <div style={{ flex: 1, margin: '10px' }}>
+              <h3>Processor Gen.</h3>
+              {["13th Gen Intel", "12th Gen Intel", "11th Gen Intel", "AMD Ryzen 7000 Series", "AMD Ryzen 6000 Series"].map((generation, index) => (
+                <div key={index}>
+                  <input type="radio" id={`processorGen-${index}`} name="processorGeneration" value={generation} onChange={handleProcessorGenChange}/>
+                  <label htmlFor={`processorGen-${index}`}>{generation}</label>
+                </div>
+              ))}
+            </div>
+
+            {/* Graphics Filter */}
+            <div style={{ flex: 1, margin: '10px' }}>
+              <h3>Graphics</h3>
+              {["All NVIDIA Graphics", "All AMD Graphics", "All Intel Graphics"].map((graphics, index) => (
+                <div key={index}>
+                  <input type="radio" id={`graphics-${index}`} name="graphics" value={graphics} onChange={handleGraphicsChange} />
+                  <label htmlFor={`graphics-${index}`}>{graphics}</label>
+                </div>
+              ))}
+            </div>
+
+
+</div>
+      </div>
+      
+      {/* Products Section */}
+      <div>
+        <h2>Products:</h2>
+        <ul style={{ listStyleType: 'none', padding: 20 }}>
+          {filteredProducts.map((product, index) => (
+            <li
+              key={index}
+              style={{
+                border: '1px solid #ddd',
+                padding: '10px',
+                marginBottom: '10px',
+                borderRadius: '5px',
+                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                backgroundColor: '#fff',
+              }}
+            >
+              {/* Product Details */}
+              <div>
+                <strong>Store Name: {product.StoreName}</strong>
+                <br />
+                <strong>Product Name: {product.ProductName}</strong>
+              </div>
+              <div>
+                <p>Graphics: {product.Graphics}</p>
+                <p>Memory: {product.Memory}</p>
+                <p>Price: ${product.Price}</p>
+                <p>Processor: {product.Processor}</p>
+                <p>Processor Gen: {product.ProcessorGen}</p>
+                <p>Storage Size: {product.StorageSize}</p>
+              </div>
+              <button
+                onClick={() => handleBuyClick(product)}
+                style={{
+                  marginTop: '10px',
+                  padding: '5px 10px',
+                  background: '#4caf50',
+                  color: '#fff',
+                  borderRadius: '5px',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                Buy
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+              }  

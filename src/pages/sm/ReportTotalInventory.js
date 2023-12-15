@@ -24,7 +24,7 @@ export function ReportTotalInventory() {
         }
 
         const responseData = await response.json();
-        //console.log(responseData);
+        console.log(responseData);
         const responseBody = JSON.parse(responseData.body);
 
         // Access the 'totalInventoryValue' property
@@ -51,7 +51,7 @@ export function ReportTotalInventory() {
   return (
     <div className="container">
       <center>
-        <h1>Report of Total Site Inventory</h1>
+        <h1>Generate $$ report of total site inventory</h1>
       </center>
       {loading ? (
         <div>Loading...</div>
@@ -60,7 +60,8 @@ export function ReportTotalInventory() {
       ) : (
         <div>
           <p>{data.message}</p>
-          <p>Total Inventory Value: ${total}</p>
+          <p>Total Inventory Value: ${total !== undefined ? total.toFixed(2) : '0.00'}</p>
+
         </div>
       )}
     </div>

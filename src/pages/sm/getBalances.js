@@ -19,21 +19,22 @@ const tdStyle = {
   padding: '8px',
 };
 
-export function AddTotalInventory() {
-  const [inventoryData, setInventoryData] = useState([]);
+export function GetBalances() {
+  const [storeBalances, setStoreBalances] = useState({});
   const [errorMessages, setErrorMessages] = useState('');
   const [loading, setLoading] = useState(true); // Set loading to true initially
 
   useEffect(() => {
-    const fetchInventoryData = async () => {
+    // Making a POST request to fetch store balances
+    const fetchStoreBalances = async () => {
       setErrorMessages('');
       try {
-        const response = await fetch('https://3lwh7srekg.execute-api.us-east-1.amazonaws.com/initial/AddTotalInventory', {
-          method: 'POST',
+        const response = await fetch('https://dzhjm8a09a.execute-api.us-east-1.amazonaws.com/initialstage/get-store-balance', {
+          method: 'POST', // Specify the HTTP method as POST
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json', // Set the content type to JSON
           },
-          body: JSON.stringify({}), // Sending an empty object as requested
+          body: JSON.stringify({}), // Include the request body if needed
         });
 
         if (!response.ok) {
@@ -42,50 +43,47 @@ export function AddTotalInventory() {
 
         const data = await response.json();
         if (data.statusCode === 200) {
-          // Assuming the body is already in JSON format or needs parsing like JSON.parse(data.body)
-          setInventoryData(JSON.parse(data.body));
+          setStoreBalances(JSON.parse(data.body));
         } else {
           throw new Error(data.message || 'An error occurred');
         }
       } catch (error) {
         console.error('Error:', error);
-        setErrorMessages('Failed to fetch inventory report: ' + error.message);
+        setErrorMessages('Failed to fetch store balances: ' + error.message);
       } finally {
         setLoading(false); // Set loading to false after fetching data
       }
     };
 
-    fetchInventoryData(); // Call the fetchInventoryData function when the component mounts
+    fetchStoreBalances(); // Call the fetchStoreBalances function when the component mounts
   }, []);
 
-  // Helper function to render table rows with "$" sign for totals
-  const renderTableRows = (data) => {
-    return Object.entries(data).map(([store, total], index) => (
+  // Helper function to render table rows
+  const renderTableRows = (data) => (
+    Object.entries(data).map(([store, balance], index) => (
       <tr key={index}>
         <td style={tdStyle}>{store}</td>
-        <td style={tdStyle}>${total.toFixed(2)}</td>
+        <td style={tdStyle}>${balance.toFixed(2)}</td>
       </tr>
-    ));
-  };
+    ))
+  );
 
   return (
     <div className="container">
       <center>
-        <h1>Report Total Inventory $$ Amount in Entire Site</h1>
+        <h1>Generate Balance For Each Virtual Store</h1>
       </center>
       {errorMessages && <div className="error-message">{errorMessages}</div>}
-      {/* Table to display the inventory data */}
-      {!loading && inventoryData && (
+      {/* Table to display store balances */}
+      {!loading && storeBalances && (
         <table style={tableStyle}>
           <thead>
             <tr>
               <th style={thStyle}>Store</th>
-              <th style={thStyle}>Total</th>
+              <th style={thStyle}>Balance</th>
             </tr>
           </thead>
-          <tbody>
-            {renderTableRows(inventoryData)}
-          </tbody>
+          <tbody>{renderTableRows(storeBalances)}</tbody>
         </table>
       )}
     </div>

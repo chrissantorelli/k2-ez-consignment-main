@@ -1,9 +1,38 @@
 import React, { useState, useEffect } from 'react';
 
+// CSS styles for the table
+const tableStyle = {
+  borderCollapse: 'collapse',
+  width: '100%',
+};
+
+const thStyle = {
+  backgroundColor: '#f2f2f2',
+  border: '1px solid #dddddd',
+  textAlign: 'left',
+  padding: '8px',
+};
+
+const tdStyle = {
+  border: '1px solid #dddddd',
+  textAlign: 'left',
+  padding: '8px',
+};
+
+const buttonStyle = {
+  backgroundColor: '#007bff',
+  color: 'white',
+  border: 'none',
+  padding: '10px 20px',
+  borderRadius: '5px',
+  cursor: 'pointer',
+};
+
 export function DollarReportOfSiteInventoryByVirtualStore() {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true); // Start with loading set to true
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc'); // Default sort order is ascending
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,10 +52,19 @@ export function DollarReportOfSiteInventoryByVirtualStore() {
         }
 
         const responseData = await response.json();
-        const responseBody = JSON.parse(responseData.body); // Parse the body as JSON
+        const responseBody = JSON.parse(responseData.body);
 
         if (Array.isArray(responseBody.inventoryByVirtualStore)) {
-          setData(responseBody.inventoryByVirtualStore);
+          // Sort the data based on the sortOrder
+          const sortedData = responseBody.inventoryByVirtualStore.sort((a, b) => {
+            if (sortOrder === 'asc') {
+              return a.TotalInventoryValue - b.TotalInventoryValue;
+            } else {
+              return b.TotalInventoryValue - a.TotalInventoryValue;
+            }
+          });
+
+          setData(sortedData);
         } else {
           throw new Error('Data structure is not as expected');
         }
@@ -34,35 +72,51 @@ export function DollarReportOfSiteInventoryByVirtualStore() {
         console.error('Error:', error);
         setError('Failed to fetch data: ' + error.message);
       } finally {
-        setLoading(false); // Set loading to false after the fetch operation
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [sortOrder]);
+
+  // Function to toggle the sort order
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  const formatCurrency = (value) => {
+    return `$${value.toFixed(2)}`;
+  };
 
   return (
     <div className="container">
       <center>
-        <h1>Dollar Report of Site Inventory By Virtual Store</h1>
+        <h1>Generate report of site inventory aggregated by virtual store</h1>
+        <button style={buttonStyle} onClick={toggleSortOrder}>
+          Sort {sortOrder === 'asc' ? 'Descending' : 'Ascending'}
+        </button>
       </center>
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
-        <div className="error-message">{error}</div>
+        error.includes("Data structure is not as expected") ? (
+          <div>No Virtual Stores</div>
+        ) : (
+          <div className="error-message">{error}</div>
+        )
       ) : (
-        <table>
+        <table style={tableStyle}>
           <thead>
             <tr>
-              <th>Store Name</th>
-              <th>Total Inventory Value</th>
+              <th style={thStyle}>Store Name</th>
+              <th style={thStyle}>Total Inventory Value</th>
             </tr>
           </thead>
           <tbody>
             {data.map((item, index) => (
               <tr key={index}>
-                <td>{item.StoreName}</td>
-                <td>{item.TotalInventoryValue}</td>
+                <td style={tdStyle}>{item.StoreName}</td>
+                <td style={tdStyle}>{formatCurrency(item.TotalInventoryValue)}</td>
               </tr>
             ))}
           </tbody>

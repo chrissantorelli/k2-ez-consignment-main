@@ -4,7 +4,10 @@ import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Route, Routes } from 'react-router-dom';
 import { Login } from './pages/Login';
+
 import { Shop } from './pages/Shop';
+
+
 import { Signup } from './pages/Signup';
 import { Dashboard } from './pages/Dashboard';
 import { AddTotalInventory } from './pages/sm/AddTotalInventory';
@@ -19,7 +22,10 @@ import { ReportTotalInventory } from './pages/sm/ReportTotalInventory';
 import ListStores from './pages/sm/listStores';
 import { RemoveProduct } from './pages/so/removeProduct';
 import ListStoresProducts from './pages/sm/ListStoresProducts';
-import IterationTwo from './pages/IterationTwo';
+import { GetBalances } from './pages/sm/getBalances';
+import { ModifyPrice } from './pages/so/ModifyPrice';
+
+
 
 function App() {
   const location = useLocation();  
@@ -39,7 +45,7 @@ function App() {
             <>
               <li><Link to="/login">Login</Link></li>
               <li><Link to="/signup">Sign Up</Link></li>
-              <li><Link to="/iterationtwo">Iteration Two</Link></li>
+  
             </>
           )}
         </ul>
@@ -56,9 +62,12 @@ function App() {
         <Route path="/sm/generate-report-total-inventory" element={<AddTotalInventory />} />
         <Route path="/sm/remove-store" element={<RemoveStore />} />
 
-        <Route path="/sm/report-dollar-balance" element={<ReportDollarBalance /> } />
+      
         <Route path="/sm/report-site-inventory-by-virtual-store" element={<DollarReportOfSiteInventoryByVirtualStore />} />
         <Route path="/sm/report-total-inventory" element={<ReportTotalInventory />} />
+        <Route path="/sm/report-site-balance" element={<ReportDollarBalance />} />
+        <Route path="/sm/generate-balances-for-each-store" element={<GetBalances />} />
+
 
 
         <Route path="/c/list-stores" element={<ListStores />} />
@@ -72,7 +81,8 @@ function App() {
         <Route path="/so/create-store" element={<CreateStore />} />
         <Route path="/so/generate-inventory" element={<GenerateInventory />} />
 
-        <Route path="/iterationtwo" element={<IterationTwo />} />
+
+        <Route path="/so/modify-price" element={<ModifyPrice />} />
 
 
 
