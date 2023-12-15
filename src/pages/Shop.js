@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import placeholderImage from '../img/placeholder.png'
+
 
 export function Shop() {
   const [storeNames, setStoreNames] = useState([]);
@@ -13,7 +15,6 @@ export function Shop() {
   const [selectedProcessor, setSelectedProcessor] = useState('');
   const [selectedProcessorGen, setSelectedProcessorGen] = useState('');
   const [selectedGraphics, setSelectedGraphics] = useState('');
-
 
 
 
@@ -96,19 +97,19 @@ export function Shop() {
   }
 
   const handleProcessorChange = (event) => {
-    console.log(event.target.value);
+    //console.log(event.target.value);
     setSelectedProcessor(event.target.value);
   }
 
 
   const handleProcessorGenChange = (event) => {
-    console.log(event.target.value);
+    //console.log(event.target.value);
     setSelectedProcessorGen(event.target.value);
   }
 
 
   const handleGraphicsChange = (event) => {
-    console.log(event.target.value);
+   // console.log(event.target.value);
     setSelectedGraphics(event.target.value);
   }
 
@@ -144,36 +145,90 @@ export function Shop() {
   }
 
 
-  function isMemoryInRange(memory, selectedMemoryRange) {
-    let minMemory = 0, maxMemory = Infinity;
+// Utility function to check if a product's memory is within the selected range
+function isMemoryInRange(memory, selectedMemoryRange) {
+  let productMemory = parseInt(memory.split(' ')[0]);
 
-    switch(selectedMemoryRange) {
-      case "32 GB or more":
-        minMemory = 32;
-        break;
-      case "16 GB":
-        minMemory = 16;
-        maxMemory = 32;
-        break;
-      case "8 GB":
-        minMemory = 8;
-        maxMemory = 16;
-        break;
-      case "4GB or less":
-        maxMemory = 4;
-        break;
-      default:
-        return true; 
-    }
+  switch(selectedMemoryRange) {
+    case "32 GB or more":
+      return productMemory >= 32;
+    case "16 GB":
+      return productMemory === 16 || productMemory === 12;
+    case "8 GB":
+      return productMemory === 8;
+    case "4GB or less":
+      return productMemory <= 4;
+    default:
+      return true; // If no memory range is selected, all memory sizes are valid
+  }
+}
 
-    return memory >= minMemory && memory <= maxMemory;
+// Utility function to check if a product's storage is within the selected range
+function isStorageInRange(storage, selectedStorageRange) {
+  let productStorage;
+
+  // Convert storage to a uniform format in GB for comparison
+  if (storage.endsWith('TB')) {
+    productStorage = parseInt(storage.replace('TB', '')) * 1024; // 1TB = 1024GB
+  } else if (storage.endsWith('GB')) {
+    productStorage = parseInt(storage.replace('GB', ''));
   }
 
+  switch(selectedStorageRange) {
+    case "2 TB or more":
+      return productStorage >= 2048;
+    case "1 TB":
+      return productStorage >= 1024 && productStorage < 2048;
+    case "512 GB":
+      return productStorage === 512;
+    case "256 GB or less":
+      return productStorage <= 256;
+    default:
+      return true; // If no storage range is selected, all storage sizes are valid
+  }
+}
 
-  // THIS IS WHERE YOU ARE WORKING 
+// Utility function to check if a product's processor matches the selected processor category
+function isProcessorTypeMatch(processor, selectedProcessorCategory) {
+  if (selectedProcessorCategory === "All Intel Processors") {
+    return processor.includes("Intel");
+  } else if (selectedProcessorCategory === "All AMD Processors") {
+    return processor.includes("AMD");
+  }
+  return true; // If no processor category is selected, all processor types are valid
+}
+
+// Utility function to check if a product's processor generation matches the selected processor generation
+function isProcessorGenMatch(processorGen, selectedProcessorGen) {
+  return selectedProcessorGen ? processorGen === selectedProcessorGen : true;
+}
+
+// Utility function to check if a product's graphics card matches the selected graphics card category
+function isGraphicsTypeMatch(graphics, selectedGraphicsCategory) {
+  if (selectedGraphicsCategory === "All NVIDIA Graphics") {
+    return graphics.includes("NVIDIA");
+  } else if (selectedGraphicsCategory === "All AMD Graphics") {
+    return graphics.includes("AMD");
+  } else if (selectedGraphicsCategory === "All Intel Graphics") {
+    return graphics.includes("Intel");
+  }
+  return true; // If no graphics category is selected, all graphics types are valid
+}
 
 
-  
+const resetFilters = () => {
+  setSelectedStores([]);
+  setSearchQuery('');
+  setSelectedPrice('');
+  setSelectedMemory('');
+  setSelectedStorage('');
+  setSelectedProcessor('');
+  setSelectedProcessorGen('');
+  setSelectedGraphics('');
+};
+
+
+// Modify filteredProducts calculation
 let filteredProducts = [];
 
 if(Array.isArray(products)) {
@@ -181,13 +236,13 @@ if(Array.isArray(products)) {
     const isStoreSelected = selectedStores.length === 0 || selectedStores.includes(product.StoreName);
     const isWithinPriceRange = isPriceInRange(product.Price, selectedPrice);
     const isWithinMemoryRange = isMemoryInRange(product.Memory, selectedMemory);
-    return isStoreSelected && isWithinPriceRange && isWithinMemoryRange;
+    const isWithinStorageRange = isStorageInRange(product.StorageSize, selectedStorage);
+    const isProcessorTypeSelected = isProcessorTypeMatch(product.Processor, selectedProcessor);
+    const isProcessorGenSelected = isProcessorGenMatch(product.ProcessorGen, selectedProcessorGen);
+    const isGraphicsTypeSelected = isGraphicsTypeMatch(product.Graphics, selectedGraphics);
+    return isStoreSelected && isWithinPriceRange && isWithinMemoryRange && isWithinStorageRange && isProcessorTypeSelected && isProcessorGenSelected && isGraphicsTypeSelected;
   });
 }
-
-// ... (rest of the component)
-
-
 
   
 
@@ -245,16 +300,39 @@ if(Array.isArray(products)) {
         {/* Filters Section */}
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px' }}>
 
+        <div style={{ display: 'none' }}>
+            <input
+              type="radio"
+              id="price-default"
+              name="price"
+              value=""
+              onChange={handlePriceChange}
+              checked={selectedPrice === ''}
+            />
+          </div>
             {/* Price Filter */}
             <div style={{ flex: 1, margin: '10px' }}>
               <h3>Price</h3>
               {["$2,001 or more", "$1,501 - $2,000", "$1,001 - $1,500", "$501 - $1000", "$500 or less"].map((price, index) => (
                 <div key={index}>
                   <input type="radio" id={`price-${index}`} name="price" value={price} onChange={handlePriceChange}/>
-                  <label htmlFor={`price-${index}`}>{price}</label>
+                  <label htmlFor={`price-${index}`} >{price}</label>
                 </div>
               ))}
             </div>
+
+            <div style={{ display: 'none' }}>
+            <input
+              type="radio"
+              id="memory-default"
+              name="memory"
+              value=""
+              onChange={handleMemoryChange}
+              checked={selectedMemory === ''}
+            />
+          </div>
+
+
 
             {/* Memory Filter */}
             <div style={{ flex: 1, margin: '10px' }}>
@@ -267,6 +345,24 @@ if(Array.isArray(products)) {
               ))}
             </div>
 
+
+
+
+            <div style={{ display: 'none' }}>
+            <input
+              type="radio"
+              id="storage-default"
+              name="storage"
+              value=""
+              onChange={handleStorageChange}
+              checked={selectedStorage === ''}
+            />
+          </div>
+
+
+
+
+
             {/* Storage Size Filter */}
             <div style={{ flex: 1, margin: '10px' }}>
               <h3>Storage Size</h3>
@@ -277,6 +373,28 @@ if(Array.isArray(products)) {
                 </div>
               ))}
             </div>
+
+
+
+
+
+
+
+            <div style={{ display: 'none' }}>
+            <input
+              type="radio"
+              id="processor-default"
+              name="processor"
+              value=""
+              onChange={handleProcessorChange}
+              checked={selectedProcessor === ''}
+            />
+          </div>
+
+
+
+
+
 
             {/* Processor Filter */}
             <div style={{ flex: 1, margin: '10px' }}>
@@ -289,6 +407,23 @@ if(Array.isArray(products)) {
               ))}
             </div>
 
+
+
+            
+
+
+
+            <div style={{ display: 'none' }}>
+            <input
+              type="radio"
+              id="processorGen-default"
+              name="processorGen"
+              value=""
+              onChange={handleProcessorGenChange}
+              checked={selectedProcessorGen === ''}
+            />
+          </div>
+
             {/* Processor Generation Filter */}
             <div style={{ flex: 1, margin: '10px' }}>
               <h3>Processor Gen.</h3>
@@ -299,6 +434,20 @@ if(Array.isArray(products)) {
                 </div>
               ))}
             </div>
+
+
+
+            <div style={{ display: 'none'}}>
+            <input
+              type="radio"
+              id="graphics-default"
+              name="graphics"
+              value=""
+              onChange={handleGraphicsChange}
+              checked={selectedGraphics === ''}
+            />
+            <label htmlFor="processorGen-default">All Generations</label>
+          </div>
 
             {/* Graphics Filter */}
             <div style={{ flex: 1, margin: '10px' }}>
@@ -311,58 +460,93 @@ if(Array.isArray(products)) {
               ))}
             </div>
 
+            <button 
+        onClick={resetFilters} 
+        style={{
+          marginTop: '10px',
+          padding: '10px 20px',
+          background: '#007bff',
+          color: '#fff',
+          borderRadius: '5px',
+          border: 'none',
+          cursor: 'pointer',
+        }}
+      >
+        Reset Filters
+      </button>
+
 
 </div>
       </div>
       
-      {/* Products Section */}
-      <div>
-        <h2>Products:</h2>
-        <ul style={{ listStyleType: 'none', padding: 20 }}>
-          {filteredProducts.map((product, index) => (
-            <li
-              key={index}
-              style={{
-                border: '1px solid #ddd',
-                padding: '10px',
-                marginBottom: '10px',
-                borderRadius: '5px',
-                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-                backgroundColor: '#fff',
-              }}
-            >
-              {/* Product Details */}
-              <div>
-                <strong>Store Name: {product.StoreName}</strong>
-                <br />
-                <strong>Product Name: {product.ProductName}</strong>
-              </div>
-              <div>
-                <p>Graphics: {product.Graphics}</p>
-                <p>Memory: {product.Memory}</p>
-                <p>Price: ${product.Price}</p>
-                <p>Processor: {product.Processor}</p>
-                <p>Processor Gen: {product.ProcessorGen}</p>
-                <p>Storage Size: {product.StorageSize}</p>
-              </div>
-              <button
-                onClick={() => handleBuyClick(product)}
-                style={{
-                  marginTop: '10px',
-                  padding: '5px 10px',
-                  background: '#4caf50',
-                  color: '#fff',
-                  borderRadius: '5px',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                Buy
-              </button>
-            </li>
-          ))}
-        </ul>
+{/* Products Section */}
+<div>
+  <h2>Products:</h2>
+  <ul style={{ listStyleType: 'none', padding: 20 }}>
+    {filteredProducts.map((product, index) => (
+      <li
+        key={index}
+        style={{
+          border: '1px solid #ddd',
+          padding: '10px',
+          marginBottom: '10px',
+          borderRadius: '5px',
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+          backgroundColor: '#fff',
+          display: 'flex', // Flex layout
+          justifyContent: 'space-between', // Space between text and image
+        }}
+      >
+        {/* Product Details */}
+        <div style={{ flex: 1 }}> {/* Flex item for text */}
+          <strong>Store Name: {product.StoreName}</strong>
+          <br />
+          <strong>Product Name: {product.ProductName}</strong>
+          <div>
+            <p>Graphics: {product.Graphics}</p>
+            <p>Memory: {product.Memory}</p>
+            <p>Price: ${product.Price}</p>
+            <p>Processor: {product.Processor}</p>
+            <p>Processor Gen: {product.ProcessorGen}</p>
+            <p>Storage Size: {product.StorageSize}</p>
+          </div>
+          <button
+            onClick={() => handleBuyClick(product)}
+            style={{
+              marginTop: '10px',
+              padding: '5px 10px',
+              background: '#4caf50',
+              color: '#fff',
+              borderRadius: '5px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            Buy
+          </button>
+        </div>
+
+        {/* Product Image */}
+        <div> {/* Flex item for image */}
+          <img
+            src={placeholderImage}
+            alt="Product Placeholder"
+            style={{ width: '150px', height: '150px' }}
+          />
+                  <div>
+        <input
+          type="checkbox"
+          id="compareCheckbox"
+        />
+        <label htmlFor="compareCheckbox">Compare</label>
       </div>
+        </div>
+      </li>
+    ))}
+  </ul>
+</div>
+
+
     </div>
   );
               }  

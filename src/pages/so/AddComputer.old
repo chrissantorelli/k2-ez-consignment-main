@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 export function AddComputer() {
-  // State variables for each form field
   const [productName, setProductName] = useState('');
   const [graphics, setGraphics] = useState('');
   const [memory, setMemory] = useState('');
@@ -13,34 +12,25 @@ export function AddComputer() {
   const [errorMessages, setErrorMessages] = useState([]);
   const [result, setResult] = useState('');
 
-  // Dropdown options
-  const graphicsOptions = ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 4080", "AMD Radeon Pro W6300", "AMD Radeon Pro W6400", "Intel Integrated Graphics", "Intel UHD Graphics 730", "Intel UHD Graphics 770"];
-  const memoryOptions = ["32 GB", "16 GB", "12 GB", "8 GB", "4GB", "1GB"];
-  const processorOptions = ["Intel Xeon", "Intel i9", "Intel i7", "AMD Ryzen 9", "AMD Ryzen 7"];
-  const processorGenOptions = ["13th Gen Intel", "12th Gen Intel", "11th Gen Intel", "AMD Ryzen 7000 Series", "AMD Ryzen 6000 Series"];
-  const storageSizeOptions = ["2 TB", "1 TB", "512 GB", "256 GB", "128 GB"];
-
-  // Function to generate a random ProductID
   function generateRandomProductId() {
+    // Generate a random ProductID (for example, between 1000 and 9999)
     return Math.floor(1000 + Math.random() * 9000);
   }
 
-  // Function to handle the onClick event of the Add to Inventory button
   function handleClick() {
-    // Construct the data object with the state values
     const data = {
-      ProductID: generateRandomProductId(),
+      ProductID: generateRandomProductId(), // Generate a random ProductID
       ProductName: productName,
       Graphics: graphics,
       Memory: memory,
-      Price: parseFloat(price),
+      Price: parseFloat(price), // Parse the price as a float
       Processor: processor,
       ProcessorGen: processorGen,
       StorageSize: storageSize,
-      StoreName: storeName,
+      StoreName: storeName, // Allow user to specify the StoreName
     };
 
-    // Validation check
+    // Simple validation check
     if (!productName || !graphics || !memory || !price || !processor || !processorGen || !storageSize || !storeName) {
       setErrorMessages(['Please fill in all fields.']);
       return;
@@ -48,8 +38,7 @@ export function AddComputer() {
 
     setErrorMessages([]);
 
-    // API request to add the computer to the inventory
-    // Replace the URL with your actual API endpoint
+    // Replace with your Lambda function's endpoint and update the path accordingly
     fetch('https://ew52oymdkd.execute-api.us-east-1.amazonaws.com/initial/AddComputer', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -57,21 +46,24 @@ export function AddComputer() {
         'Content-Type': 'application/json',
       },
     })
-    .then((response) => response.json())
-    .then((data) => {
-      setResult(data.body);
-      alert('Computer added successfully to inventory');
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      setErrorMessages([error.message]);
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        setResult(data.body);
+        alert('Computer added successfully to inventory');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setErrorMessages([error.message]);
+      });
   }
 
   return (
     <div className="container">
-      <center><h1>Add Computer to Inventory</h1></center>
+      <center>
+        <h1>Add Computer to Inventory</h1>
+      </center>
       <form>
+        {/* Form fields for user input */}
         <div className="form-group">
           <label htmlFor="productName">Product Name:</label>
           <input
@@ -82,27 +74,26 @@ export function AddComputer() {
             required
           />
         </div>
-
         <div className="form-group">
           <label htmlFor="graphics">Graphics:</label>
-          <select id="graphics" value={graphics} onChange={(e) => setGraphics(e.target.value)} required>
-            <option value="">Select Graphics</option>
-            {graphicsOptions.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
-            ))}
-          </select>
+          <input
+            type="text"
+            id="graphics"
+            value={graphics}
+            onChange={(e) => setGraphics(e.target.value)}
+            required
+          />
         </div>
-
         <div className="form-group">
           <label htmlFor="memory">Memory:</label>
-          <select id="memory" value={memory} onChange={(e) => setMemory(e.target.value)} required>
-            <option value="">Select Memory</option>
-            {memoryOptions.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
-            ))}
-          </select>
+          <input
+            type="text"
+            id="memory"
+            value={memory}
+            onChange={(e) => setMemory(e.target.value)}
+            required
+          />
         </div>
-
         <div className="form-group">
           <label htmlFor="price">Price:</label>
           <input
@@ -113,37 +104,36 @@ export function AddComputer() {
             required
           />
         </div>
-
         <div className="form-group">
           <label htmlFor="processor">Processor:</label>
-          <select id="processor" value={processor} onChange={(e) => setProcessor(e.target.value)} required>
-            <option value="">Select Processor</option>
-            {processorOptions.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
-            ))}
-          </select>
+          <input
+            type="text"
+            id="processor"
+            value={processor}
+            onChange={(e) => setProcessor(e.target.value)}
+            required
+          />
         </div>
-
         <div className="form-group">
           <label htmlFor="processorGen">Processor Generation:</label>
-          <select id="processorGen" value={processorGen} onChange={(e) => setProcessorGen(e.target.value)} required>
-            <option value="">Select Processor Generation</option>
-            {processorGenOptions.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
-            ))}
-          </select>
+          <input
+            type="text"
+            id="processorGen"
+            value={processorGen}
+            onChange={(e) => setProcessorGen(e.target.value)}
+            required
+          />
         </div>
-
         <div className="form-group">
           <label htmlFor="storageSize">Storage Size:</label>
-          <select id="storageSize" value={storageSize} onChange={(e) => setStorageSize(e.target.value)} required>
-            <option value="">Select Storage Size</option>
-            {storageSizeOptions.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
-            ))}
-          </select>
+          <input
+            type="text"
+            id="storageSize"
+            value={storageSize}
+            onChange={(e) => setStorageSize(e.target.value)}
+            required
+          />
         </div>
-
         <div className="form-group">
           <label htmlFor="storeName">Store Name:</label>
           <input
@@ -154,23 +144,20 @@ export function AddComputer() {
             required
           />
         </div>
-
-        {/* Display error messages if any */}
+        {/* Error messages */}
         <div className="error-message">
           {errorMessages.map((message, index) => (
             <div key={index}>{message}</div>
           ))}
         </div>
-
-        {/* Add to Inventory button */}
+        {/* Submit button */}
         <div className="form-group">
           <button type="button" onClick={handleClick}>
             Add to Inventory
           </button>
         </div>
       </form>
-
-      {/* Display the result message */}
+      {/* Result message */}
       {result && (
         <div className="result-message">
           <p>Result: {result}</p>
