@@ -25,6 +25,8 @@ import ListStoresProducts from './pages/sm/ListStoresProducts';
 import { GetBalances } from './pages/sm/getBalances';
 import { ModifyPrice } from './pages/so/ModifyPrice';
 
+import { Compare } from './pages/Compare';
+
 
 
 function App() {
@@ -83,6 +85,8 @@ function App() {
 
 
         <Route path="/so/modify-price" element={<ModifyPrice />} />
+
+        <Route path="/compare" element={<Compare />} />
 
 
 

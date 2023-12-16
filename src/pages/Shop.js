@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import placeholderImage from '../img/placeholder.png'
 import confetti from 'canvas-confetti';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -25,6 +26,11 @@ export function Shop() {
 
 
   const [purchaseMade, setPurchaseMade] = useState(false);
+
+  const [compareProducts, setCompareProducts] = useState([]);
+
+  const navigate = useNavigate();
+
 
 
   const triggerConfetti = () => {
@@ -173,8 +179,26 @@ export function Shop() {
 
 
 
+  const handleCompareCheck = (productID, isChecked) => {
+    setCompareProducts(prev => {
+      if (isChecked) {
+        // Add the product ID to the array
+        return [...prev, productID];
+      } else {
+        // Remove the product ID from the array
+        return prev.filter(id => id !== productID);
+      }
+    });
+  };
+  
 
 
+  const handleCompareClick = () => {
+    // Navigate to Compare.js with compareProducts as parameters
+    navigate('/compare'); 
+    console.log("Compare Button Clicked... ")
+  };
+  
 
 
 
@@ -669,11 +693,21 @@ if(Array.isArray(products)) {
             style={{ width: '150px', height: '150px' }}
           />
                   <div>
-        <input
-          type="checkbox"
-          id="compareCheckbox"
-        />
-        <label htmlFor="compareCheckbox">Compare</label>
+          <input
+            type="checkbox"
+            id={`compareCheckbox-${product.ProductID}`}
+            onChange={(e) => handleCompareCheck(product.ProductID, e.target.checked)}
+          />
+          <label htmlFor={`compareCheckbox-${product.ProductID}`}></label>
+                    <button
+            onClick={handleCompareClick}
+            disabled={compareProducts.length === 0}
+          >
+            Compare
+          </button>
+        
+
+
       </div>
         </div>
       </li>
