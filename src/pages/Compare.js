@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import placeholderImage from '../img/placeholder.png'
 import confetti from 'canvas-confetti';
 
+// Adjusted styles
 const tableStyle = {
   borderCollapse: 'collapse',
   width: '100%',
@@ -21,35 +23,41 @@ const tdStyle = {
   padding: '8px',
 };
 
+const buttonStyle = {
+  padding: '10px 20px',
+  background: '#4caf50',
+  color: '#fff',
+  borderRadius: '5px',
+  border: 'none',
+  cursor: 'pointer',
+  margin: '5px'
+};
+
+const errorStyle = {
+  color: 'red',
+  marginBottom: '20px'
+};
+
 export function Compare() {
   const location = useLocation();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [error, setError] = useState('');
-  const [userLocation, setUserLocation] = useState({ lat: '', lon: '' });
-  const [purchaseMade, setPurchaseMade] = useState(false);
 
   useEffect(() => {
     if (location.state && location.state.products) {
       setProducts(location.state.products);
-      location.state.products.forEach(product => {
-        console.log("Product ID: ", product.ProductID);
-      });
     } else {
       setError("No products data was passed to the comparison page.");
-      console.error("No products data was passed to the comparison page.");
     }
-  }, [location.state, purchaseMade]);
+  }, [location.state]);
 
   const handleReturnToShop = () => {
-    navigate('/shop'); // Adjust the route as needed
+    navigate('/shop');
   };
 
   const handleBuyProduct = async (productId) => {
-    // Implement your buying logic here
     console.log(`Buying product with ID: ${productId}`);
-    // Example: navigate(`/buy/${productId}`);
-    // For demonstration, triggering confetti
     triggerConfetti();
   };
 
@@ -64,30 +72,70 @@ export function Compare() {
   return (
     <div className="container">
       <center><h1>Product Comparison</h1></center>
-      <button onClick={handleReturnToShop} style={{ marginBottom: '20px' }}>Return to Shop</button>
-      {error && <p className="error">{error}</p>}
+      <button onClick={handleReturnToShop} style={buttonStyle}>Return to Shop</button>
+      {error && <p style={errorStyle}>{error}</p>}
       <div className="compare-table">
         {products.length > 0 ? (
           products.map((product, index) => (
             <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <table style={tableStyle}>
                 <tbody>
-                  <tr>
-                    <th style={thStyle}>Product ID</th>
-                    <td style={tdStyle}>{product.ProductID}</td>
+                  <tr style={{ visibility: 'hidden' }}>
+                    <th style={{ visibility: 'hidden' }}>Product ID</th>
+                    <td style={{ visibility: 'hidden' }}>{product.ProductID}</td>
                   </tr>
                   <tr>
-                    <th style={thStyle}>Product Name</th>
-                    <td style={tdStyle}>{product.ProductName}</td>
+                    <th style={thStyle}>
+                    <img
+                          src={placeholderImage}
+                          alt="Product Placeholder"
+                          style={{ width: '150px', height: '150px' }}
+                        />
+                      <p>Product Name</p>
+                      </th>
+                    <td style={tdStyle}>
+                      <img
+                          src={placeholderImage}
+                          alt="Product Placeholder"
+                          style={{ width: '150px', height: '150px', visibility: 'hidden' }}
+                        />
+                      
+                      <p>{product.ProductName}</p>
+                      
+                      </td>
                   </tr>
                   <tr>
                     <th style={thStyle}>Price</th>
                     <td style={tdStyle}>${product.Price}</td>
                   </tr>
+                  <tr>
+                    <th style={thStyle}>Graphics</th>
+                    <td style={tdStyle}>{product.Graphics}</td>
+                  </tr>
+                  <tr>
+                    <th style={thStyle}>Memory</th>
+                    <td style={tdStyle}>{product.Memory}</td>
+                  </tr>
+                  <tr>
+                    <th style={thStyle}>Price</th>
+                    <td style={tdStyle}>${product.Price}</td>
+                  </tr>
+                  <tr>
+                    <th style={thStyle}>Processor</th>
+                    <td style={tdStyle}>{product.Processor}</td>
+                  </tr>
+                  <tr>
+                    <th style={thStyle}>Processor Gen</th>
+                    <td style={tdStyle}>{product.ProcessorGen}</td>
+                  </tr>
+                  <tr>
+                    <th style={thStyle}>Storage Size</th>
+                    <td style={tdStyle}>{product.StorageSize}</td>
+                  </tr>
                   {/* Add more rows as needed based on your product attributes */}
                 </tbody>
               </table>
-              <button onClick={() => handleBuyProduct(product.ProductID)} style={{ marginLeft: '10px', padding: '8px 16px' }}>
+              <button onClick={() => handleBuyProduct(product.ProductID)} style={buttonStyle}>
                 Buy Now
               </button>
             </div>
