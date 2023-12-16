@@ -194,11 +194,15 @@ export function Shop() {
 
 
   const handleCompareClick = () => {
-    // Navigate to Compare.js with compareProducts as parameters
-    navigate('/compare'); 
-    console.log("Compare Button Clicked... ")
-  };
+    // Filter the selected products for comparison based on their IDs
+    const selectedProductsForComparison = products.filter(product => 
+      compareProducts.includes(product.ProductID)
+    );
   
+    // Navigate to Compare.js with the selected products as parameters
+    navigate('/compare', { state: { products: selectedProductsForComparison } });
+    console.log("Compare Button Clicked with products:", selectedProductsForComparison);
+  };
 
 
 
