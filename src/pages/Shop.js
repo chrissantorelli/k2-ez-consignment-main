@@ -32,7 +32,6 @@ export function Shop() {
 
   const [ipAddress, setIpAddress] = useState('');
 
-  const [productExists, setProductExists] = useState(null); 
 
   const navigate = useNavigate();
 
@@ -361,11 +360,11 @@ export function Shop() {
     getProductExistence(product_id);
     //console.log("from, button, buynow, ", productExists);
     let doesProductExist = sessionStorage.getItem('productExists');
-    //console.log(doesProductExist);
-    if (doesProductExist == 'true') {
+    console.log(doesProductExist);
+    if (doesProductExist === 'true') {
       buyProduct(product_id, user_lat, user_lon);
     } else {
-        alert('This product has already been purchased.');
+        alert('Conflict: Two users buying the same product same time, please try again.');
         navigate('/shop');
     }
     setIsModalOpen(false);

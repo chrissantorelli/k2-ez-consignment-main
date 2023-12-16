@@ -49,6 +49,9 @@ export function Compare() {
   const [userLocation, setUserLocation] = useState({ lat: '', lon: '' });
   const [purchaseMade, setPurchaseMade] = useState(false);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   useEffect(() => {
     const fetchIP = async () => {
       try {
@@ -117,6 +120,11 @@ export function Compare() {
 //       fetchProducts();
 //   }, [location.state, purchaseMade]);
 
+const handleCloseModal = () => {
+  setIsModalOpen(false);
+  setSelectedProduct(null);
+};
+
 const fetchProducts = () => {
   if (location.state && location.state.products) {
     console.log("Received products:", location.state.products); // Debugging
@@ -136,12 +144,76 @@ useEffect(() => {
 }, [products]);
 
 
+const checkProductExists = (productId) => {
+  // Return the fetch promise chain
+  return fetch('https://lbdu510k23.execute-api.us-east-1.amazonaws.com/initial/doesProductExistResource', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productID: productId }),
+  })
+  .then(response => response.json())
+  .then(data => {
+      const responseBody = JSON.parse(data.body);
+      return responseBody.productExists;  // Return the existence directly from the promise chain
+  })
+  .catch(error => {
+      console.error('Error:', error);
+      return false;  // Make sure to return false in case of an error
+  });
+};
+
+async function getProductExistence(productId) {
+  try {
+    const doesProductExist = await checkProductExists(productId);
+    //console.log('Product exists:', doesProductExist);
+    //console.log(doesProductExist);
+    sessionStorage.setItem('productExists', doesProductExist);
+  } catch (error) {
+    // Handle any errors that occurred during fetch
+  }
+}
+
+
+
+
+
+
+const handleBuyNowClick = (product) => {
+  console.log("Buy Now Clicked!");
+ // console.log(computerID)
+  let product_id = selectedProduct?.ProductID;
+  let user_lat = userLocation.lat;
+  let user_lon = userLocation.lon;
+  getProductExistence(product_id);
+  //console.log("from, button, buynow, ", productExists);
+  let doesProductExist = sessionStorage.getItem('productExists');
+  console.log(doesProductExist);
+  if (doesProductExist === 'true') {
+    alert('Transaction Successful Thank you');
+    buyProduct(product_id, user_lat, user_lon);
+    triggerConfetti();
+  } else {
+      alert('Conflict: Two users buying the same product same time, please try again.');
+      navigate('/shop');
+  }
+  setIsModalOpen(false);
+
+};
+  
+
+  const handleReturnToShop = () => {
+    navigate('/shop');
+  };
+
   const buyProduct = async (productId, customerLat, customerLon) => {
     const data = {
       productId: parseInt(productId, 10),
       customerLat: parseFloat(customerLat),
       customerLon: parseFloat(customerLon)
     };
+    //console.log(data);
   
     try {
       const response = await fetch('https://lpsjpvp5a2.execute-api.us-east-1.amazonaws.com/buyProductStage/buyProductResource', {
@@ -158,26 +230,16 @@ useEffect(() => {
   
       const result = await response.json();
       console.log('Success:', result);
+      //alert('Success: ' + result);
+
       triggerConfetti();
-  
-      // Remove the purchased product from the products array
-      const updatedProducts = products.filter(product => product.ProductID !== productId);
-      setProducts(updatedProducts); // Update the products state
-  
+      setPurchaseMade(prev => !prev); // Toggle purchaseMade to refresh the product list
     } catch (error) {
       alert(`Error: ${error.message}`);
       throw error;
     }
   };
-  
 
-  const handleReturnToShop = () => {
-    navigate('/shop');
-  };
-
-  const handleBuyProduct = async (productId) => {
-    buyProduct(productId, userLocation.lat, userLocation.lon);
-  };
 
   const triggerConfetti = () => {
     confetti({
@@ -233,7 +295,7 @@ useEffect(() => {
                   {/* Add more rows as needed based on your product attributes */}
                 </tbody>
               </table>
-              <button onClick={() => handleBuyProduct(product.ProductID)} style={buttonStyle}>
+              <button onClick={() => handleBuyNowClick(product.ProductID)} style={buttonStyle}>
                 Buy Now
               </button>
             </div>
@@ -242,7 +304,10 @@ useEffect(() => {
           <p>No products selected for comparison or data is still loading.</p>
         )}
       </div>
+    
+
     </div>
+    
   );
 }
 
