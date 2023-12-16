@@ -50,11 +50,11 @@ export function Shop() {
     fetchIP();
   }, []);
 
-  useEffect(() => {
-    if (ipAddress) {
-      console.log(ipAddress);
-    }
-  }, [ipAddress]);
+  // useEffect(() => {
+  //   if (ipAddress) {
+  //     console.log(ipAddress);
+  //   }
+  // }, [ipAddress]);
 
   useEffect(() => {
     const httpGetAsync = (url, callback) => {
