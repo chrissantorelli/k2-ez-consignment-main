@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import placeholderImage from '../img/placeholder.png'
+import placeholderImage from '../img/placeholder.png';
 import confetti from 'canvas-confetti';
 
 // Adjusted styles
@@ -43,22 +43,73 @@ export function Compare() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [error, setError] = useState('');
+  const [userLocation, setUserLocation] = useState({ lat: '', lon: '' });
+  const [purchaseMade, setPurchaseMade] = useState(false);
 
   useEffect(() => {
+    fetch('http://ip-api.com/json')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.lat && data.lon) {
+          setUserLocation({ lat: data.lat, lon: data.lon });
+        }
+      })
+      .catch(err => console.error('Error fetching location:', err));
+  }, []);
+
+  const fetchProducts = () => {
     if (location.state && location.state.products) {
       setProducts(location.state.products);
     } else {
       setError("No products data was passed to the comparison page.");
     }
-  }, [location.state]);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [location.state, purchaseMade]);
+
+  const buyProduct = async (productId, customerLat, customerLon) => {
+    const data = {
+      productId: parseInt(productId, 10),
+      customerLat: parseFloat(customerLat),
+      customerLon: parseFloat(customerLon)
+    };
+  
+    try {
+      const response = await fetch('https://lpsjpvp5a2.execute-api.us-east-1.amazonaws.com/buyProductStage/buyProductResource', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const result = await response.json();
+      console.log('Success:', result);
+      triggerConfetti();
+  
+      // Remove the purchased product from the products array
+      const updatedProducts = products.filter(product => product.ProductID !== productId);
+      setProducts(updatedProducts); // Update the products state
+  
+    } catch (error) {
+      console.error('Error:', error);
+      throw error;
+    }
+  };
+  
 
   const handleReturnToShop = () => {
     navigate('/shop');
   };
 
   const handleBuyProduct = async (productId) => {
-    console.log(`Buying product with ID: ${productId}`);
-    triggerConfetti();
+    buyProduct(productId, userLocation.lat, userLocation.lon);
   };
 
   const triggerConfetti = () => {
@@ -85,24 +136,8 @@ export function Compare() {
                     <td style={{ visibility: 'hidden' }}>{product.ProductID}</td>
                   </tr>
                   <tr>
-                    <th style={thStyle}>
-                    <img
-                          src={placeholderImage}
-                          alt="Product Placeholder"
-                          style={{ width: '150px', height: '150px' }}
-                        />
-                      <p>Product Name</p>
-                      </th>
-                    <td style={tdStyle}>
-                      <img
-                          src={placeholderImage}
-                          alt="Product Placeholder"
-                          style={{ width: '150px', height: '150px', visibility: 'hidden' }}
-                        />
-                      
-                      <p>{product.ProductName}</p>
-                      
-                      </td>
+                    <th style={thStyle}>Product Name</th>
+                    <td style={tdStyle}>{product.ProductName}</td>
                   </tr>
                   <tr>
                     <th style={thStyle}>Price</th>
@@ -115,10 +150,6 @@ export function Compare() {
                   <tr>
                     <th style={thStyle}>Memory</th>
                     <td style={tdStyle}>{product.Memory}</td>
-                  </tr>
-                  <tr>
-                    <th style={thStyle}>Price</th>
-                    <td style={tdStyle}>${product.Price}</td>
                   </tr>
                   <tr>
                     <th style={thStyle}>Processor</th>
