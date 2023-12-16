@@ -94,9 +94,10 @@ export function Compare() {
         // console.log(computerID)
         setSelectedProduct(productId);
          triggerConfetti();
-         let product_id = selectedProduct?.ProductID;
+         let product_id = productId;
          let user_lat = userLocation.lat;
          let user_lon = userLocation.lon;
+         console.log(product_id, user_lat, user_lon);
          buyProduct(product_id, user_lat, user_lon);
       };
 
@@ -111,12 +112,16 @@ export function Compare() {
     useEffect(() => {
       if (location.state && location.state.products) {
         setProducts(location.state.products);
-        console.log("Received products for comparison:", location.state.products);
+        //console.log("Received products for comparison:", location.state.products);
+        location.state.products.forEach(product => {
+          console.log("Product ID: ", product.productId);
+        });   
       } else {
         setError("No products data was passed to the comparison page.");
         console.error("No products data was passed to the comparison page.");
       }
     }, [location.state]);
+    //COME BCK HERE
     
 
     const handleReturnToShop = () => {
@@ -130,7 +135,7 @@ export function Compare() {
       };
 
     // Generate table headers based on product attributes
-    const headers = ['Product Name', 'Price', 'Memory', 'Processor', 'Graphics', 'Storage Size'];
+    const headers = ['Product ID', 'Product Name', 'Price', 'Memory', 'Processor', 'Graphics', 'Storage Size'];
   
     return (
         <div className="container">
@@ -141,21 +146,12 @@ export function Compare() {
             {products.length > 0 ? (
               products.map((product, index) => (
                 <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                  <button 
-                    onClick={() => handleBuyProduct(product.ProductID)} 
-                    style={{ 
-                      marginRight: '10px', 
-                      padding: '10px 20px', 
-                      background: '#4caf50', 
-                      color: '#fff', 
-                      borderRadius: '5px', 
-                      border: 'none', 
-                      cursor: 'pointer',
-                    }}>
-                    Buy
-                  </button>
                   <table style={tableStyle}>
                     <tbody>
+                      <tr>
+                        <th style={thStyle}>Product ID</th>
+                        <td style={tdStyle}>{product.ProductID}</td>
+                      </tr>
                       <tr>
                         <th style={thStyle}>Product Name</th>
                         <td style={tdStyle}>{product.ProductName}</td>
@@ -182,6 +178,20 @@ export function Compare() {
                       </tr>
                     </tbody>
                   </table>
+                  <button 
+                    onClick={() => handleBuyProduct(product.ProductID)} 
+                    style={{ 
+                      marginLeft: '40px',
+                      marginRight: '40px', 
+                      padding: '10px 20px', 
+                      background: '#4caf50', 
+                      color: '#fff', 
+                      borderRadius: '5px', 
+                      border: 'none', 
+                      cursor: 'pointer',
+                    }}>
+                    Buy
+                  </button>
                 </div>
               ))
             ) : !error && (
