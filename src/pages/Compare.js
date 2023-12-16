@@ -105,17 +105,36 @@ export function Compare() {
   //     .catch(err => console.error('Error fetching location:', err));
   // }, []);
 
-  // const fetchProducts = () => {
-  //   if (location.state && location.state.products) {
-  //     setProducts(location.state.products);
-  //   } else {
-  //     setError("No products data was passed to the comparison page.");
-  //   }
-  // };
+//   const fetchProducts = () => {
+//      if (location.state && location.state.products) {
+//         setProducts(location.state.products);
+//   } else {
+//      setError("No products data was passed to the comparison page.");
+//    }
+//  };
 
-  // useEffect(() => {
-  //   fetchProducts();
-  // }, [location.state, purchaseMade]);
+//   useEffect(() => {
+//       fetchProducts();
+//   }, [location.state, purchaseMade]);
+
+const fetchProducts = () => {
+  if (location.state && location.state.products) {
+    console.log("Received products:", location.state.products); // Debugging
+    setProducts(location.state.products);
+  } else {
+    setError("No products data was passed to the comparison page.");
+  }
+};
+
+useEffect(() => {
+  fetchProducts();
+}, [location.state]);
+
+// Add this to see if the products state updates correctly
+useEffect(() => {
+  console.log("Products state updated:", products);
+}, [products]);
+
 
   const buyProduct = async (productId, customerLat, customerLon) => {
     const data = {
