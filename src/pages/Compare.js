@@ -156,6 +156,7 @@ const checkProductExists = (productId) => {
   .then(response => response.json())
   .then(data => {
       const responseBody = JSON.parse(data.body);
+      console.log(responseBody.productExists);
       return responseBody.productExists;  // Return the existence directly from the promise chain
   })
   .catch(error => {
@@ -169,7 +170,7 @@ async function getProductExistence(productId) {
     const doesProductExist = await checkProductExists(productId);
     //console.log('Product exists:', doesProductExist);
     //console.log(doesProductExist);
-    sessionStorage.setItem('productExists', doesProductExist);
+    sessionStorage.setItem('productExistsCompare', doesProductExist);
   } catch (error) {
     // Handle any errors that occurred during fetch
   }
@@ -183,26 +184,25 @@ async function getProductExistence(productId) {
 const handleBuyNowClick = (product) => {
   console.log("Buy Now Clicked!");
  // console.log(computerID)
-  let product_id = selectedProduct?.ProductID;
+  let product_id = product;
   let user_lat = userLocation.lat;
   let user_lon = userLocation.lon;
-  console.log("product id: ", product_id); 
+  console.log("product id: ", product); 
   console.log("user lat", user_lat); 
   console.log("user lon", user_lon); 
   getProductExistence(product_id);
   //console.log("from, button, buynow, ", productExists);
-  let doesProductExist = sessionStorage.getItem('productExists');
+  let doesProductExist = sessionStorage.getItem('productExistsCompare');
   console.log("results from does product exist session storage", doesProductExist);
   if (doesProductExist === 'true') {
     alert('Transaction Successful Thank you');
     buyProduct(product_id, user_lat, user_lon);
     triggerConfetti();
+    navigate('/shop');
   } else {
       alert('Conflict: Two users buying the same product same time, please try again.');
       navigate('/shop');
   }
-  setIsModalOpen(false);
-
 };
   
 
