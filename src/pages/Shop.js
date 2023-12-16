@@ -32,7 +32,11 @@ export function Shop() {
 
   const [ipAddress, setIpAddress] = useState('');
 
+  const [productExists, setProductExists] = useState(null); 
+
   const navigate = useNavigate();
+
+
 
   
   
@@ -242,7 +246,7 @@ export function Shop() {
       customerLat: parseFloat(customerLat),
       customerLon: parseFloat(customerLon)
     };
-    console.log(data);
+    //console.log(data);
   
     try {
       const response = await fetch('https://lpsjpvp5a2.execute-api.us-east-1.amazonaws.com/buyProductStage/buyProductResource', {
@@ -259,6 +263,8 @@ export function Shop() {
   
       const result = await response.json();
       console.log('Success:', result);
+      //alert('Success: ' + result);
+
       triggerConfetti();
       setPurchaseMade(prev => !prev); // Toggle purchaseMade to refresh the product list
     } catch (error) {
@@ -308,6 +314,43 @@ export function Shop() {
     });
   };
 
+
+  const checkProductExists = (productId) => {
+    // Return the fetch promise chain
+    return fetch('https://lbdu510k23.execute-api.us-east-1.amazonaws.com/initial/doesProductExistResource', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productID: productId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        const responseBody = JSON.parse(data.body);
+        return responseBody.productExists;  // Return the existence directly from the promise chain
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        return false;  // Make sure to return false in case of an error
+    });
+  };
+
+  async function getProductExistence(productId) {
+    try {
+      const doesProductExist = await checkProductExists(productId);
+      //console.log('Product exists:', doesProductExist);
+      //console.log(doesProductExist);
+      sessionStorage.setItem('productExists', doesProductExist);
+    } catch (error) {
+      // Handle any errors that occurred during fetch
+    }
+  }
+  
+  
+
+
+
+
   const handleBuyNowClick = (product) => {
     console.log("Buy Now Clicked!");
    // console.log(computerID)
@@ -315,9 +358,18 @@ export function Shop() {
     let product_id = selectedProduct?.ProductID;
     let user_lat = userLocation.lat;
     let user_lon = userLocation.lon;
-    buyProduct(product_id, user_lat, user_lon);
-
+    getProductExistence(product_id);
+    //console.log("from, button, buynow, ", productExists);
+    let doesProductExist = sessionStorage.getItem('productExists');
+    //console.log(doesProductExist);
+    if (doesProductExist == 'true') {
+      buyProduct(product_id, user_lat, user_lon);
+    } else {
+        alert('This product has already been purchased.');
+        navigate('/shop');
+    }
     setIsModalOpen(false);
+
   };
 
 
