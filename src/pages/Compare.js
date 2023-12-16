@@ -98,7 +98,7 @@ export function Compare() {
       setProducts(updatedProducts); // Update the products state
   
     } catch (error) {
-      console.error('Error:', error);
+      alert(`Error: ${error.message}`);
       throw error;
     }
   };

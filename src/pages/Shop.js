@@ -172,7 +172,7 @@ export function Shop() {
       triggerConfetti();
       setPurchaseMade(prev => !prev); // Toggle purchaseMade to refresh the product list
     } catch (error) {
-      console.error('Error:', error);
+      alert(`Error: ${error.message}`);
       throw error;
     }
   };
