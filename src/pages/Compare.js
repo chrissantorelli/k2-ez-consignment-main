@@ -113,9 +113,9 @@ export function Compare() {
   //   }
   // };
 
-  useEffect(() => {
-    fetchProducts();
-  }, [location.state, purchaseMade]);
+  // useEffect(() => {
+  //   fetchProducts();
+  // }, [location.state, purchaseMade]);
 
   const buyProduct = async (productId, customerLat, customerLon) => {
     const data = {
