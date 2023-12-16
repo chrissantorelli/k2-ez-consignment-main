@@ -85,7 +85,8 @@ function App() {
 
         <Route path="/so/modify-price" element={<ModifyPrice />} />
 
-        <Route path="/Compare" element={<Compare />} />
+        <Route path="/compare" element={<Compare />} />
+
 
 
 

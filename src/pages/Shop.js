@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import placeholderImage from '../img/placeholder.png'
 import confetti from 'canvas-confetti';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+
 
 
 export function Shop() {
@@ -27,6 +29,11 @@ export function Shop() {
 
 
   const [purchaseMade, setPurchaseMade] = useState(false);
+
+  const [compareProducts, setCompareProducts] = useState([]);
+
+  const navigate = useNavigate();
+
 
 
   const triggerConfetti = () => {
@@ -183,6 +190,30 @@ export function Shop() {
       throw error;
     }
   };
+
+
+  const handleCompareCheck = (productID, isChecked) => {
+    setCompareProducts(prev => {
+      if (isChecked) {
+        // Add the product ID to the array
+        return [...prev, productID];
+      } else {
+        // Remove the product ID from the array
+        return prev.filter(id => id !== productID);
+      }
+    });
+  };
+  
+
+
+  const handleCompareClick = () => {
+    // Navigate to Compare.js with compareProducts as parameters
+    navigate('/compare'); 
+    console.log("Compare Button Clicked... ")
+  };
+  
+
+
 
   const handleStoreClick = (name) => {
     setSelectedStores((prevSelectedStores) => {
@@ -691,6 +722,9 @@ if(Array.isArray(products)) {
             alt="Product Placeholder"
             style={{ width: '150px', height: '150px' }}
           />
+
+                  <div>
+       
             {/* Compare Checkbox */}
             <div>
         <input
