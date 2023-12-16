@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import placeholderImage from '../img/placeholder.png'
 import confetti from 'canvas-confetti';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 
 
@@ -29,8 +30,85 @@ export function Shop() {
 
   const [compareProducts, setCompareProducts] = useState([]);
 
+  const [ipAddress, setIpAddress] = useState('');
+
   const navigate = useNavigate();
 
+  
+  
+  useEffect(() => {
+    const fetchIP = async () => {
+      try {
+        const response = await axios.get('https://api.ipify.org?format=json');
+        setIpAddress(response.data.ip);
+        console.log('IP fetched and set:', response.data.ip);
+      } catch (error) {
+        console.error('Error fetching the IP address:', error);
+      }
+    };
+  
+    fetchIP();
+  }, []);
+
+  useEffect(() => {
+    if (ipAddress) {
+      console.log(ipAddress);
+    }
+  }, [ipAddress]);
+
+  useEffect(() => {
+    const httpGetAsync = (url, callback) => {
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                callback(xmlHttp.responseText);
+            }
+        }
+        xmlHttp.open("GET", url, true);
+        xmlHttp.send(null);
+    }
+
+    if (ipAddress) {
+        const url = `https://ipgeolocation.abstractapi.com/v1/?api_key=204fa0a3e0a7463e895f8549a8cdf1c3&ip_address=${ipAddress}`;
+        httpGetAsync(url, (response) => {
+          const geolocationData = JSON.parse(response);
+          //console.log('Latitude:', geolocationData.latitude, 'Longitude:', geolocationData.longitude);
+          setUserLocation({
+            lat: geolocationData.latitude,
+            lon: geolocationData.longitude
+        });
+        });
+    }
+}, [ipAddress]);
+  
+  
+
+
+
+
+
+  // const getLocation = () => {
+  //   if (!navigator.geolocation) {
+  //     alert('Geolocation is not supported by your browser');
+  //   } else {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (position) => {
+  //         setUserLocation({
+  //           lat: position.coords.latitude,
+  //           lon: position.coords.longitude,
+  //         });
+  //       },
+  //       () => {
+  //         alert('Unable to retrieve your location');
+  //       }
+  //     );
+  //   }
+  // };
+  
+  // useEffect(() => {
+  //   getLocation();
+  // }, []);
+  
 
 
   const triggerConfetti = () => {
@@ -42,16 +120,27 @@ export function Shop() {
   };
 
 
-  useEffect(() => {
-    fetch('http://ip-api.com/json')
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.lat && data.lon) {
-          setUserLocation({ lat: data.lat, lon: data.lon });
-        }
-      })
-      .catch(err => console.error('Error fetching location:', err));
-  }, []);
+  // useEffect(() => {
+  //   fetch('http://ip-api.com/json')
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       if (data && data.lat && data.lon) {
+  //         setUserLocation({ lat: data.lat, lon: data.lon });
+  //       }
+  //     })
+  //     .catch(err => console.error('Error fetching location:', err));
+  // }, []);
+
+
+  // fetch('https://ipgeolocation.abstractapi.com/v1/?api_key=204fa0a3e0a7463e895f8549a8cdf1c3')
+  // .then(response => response.json())
+  // .then(data => {
+  //   console.log(data); // Process your location data
+  // })
+  // .catch(error => {
+  //   console.error('Error fetching location data:', error);
+  // });
+
   
 
   useEffect(() => {
@@ -153,6 +242,7 @@ export function Shop() {
       customerLat: parseFloat(customerLat),
       customerLon: parseFloat(customerLon)
     };
+    console.log(data);
   
     try {
       const response = await fetch('https://lpsjpvp5a2.execute-api.us-east-1.amazonaws.com/buyProductStage/buyProductResource', {
