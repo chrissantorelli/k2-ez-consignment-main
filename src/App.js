@@ -28,7 +28,6 @@ import { ModifyPrice } from './pages/so/ModifyPrice';
 import { Compare } from './pages/Compare';
 
 
-
 function App() {
   const location = useLocation();  
 
@@ -87,6 +86,7 @@ function App() {
         <Route path="/so/modify-price" element={<ModifyPrice />} />
 
         <Route path="/compare" element={<Compare />} />
+
 
 
 
