@@ -186,10 +186,13 @@ const handleBuyNowClick = (product) => {
   let product_id = selectedProduct?.ProductID;
   let user_lat = userLocation.lat;
   let user_lon = userLocation.lon;
+  console.log("product id: ", product_id); 
+  console.log("user lat", user_lat); 
+  console.log("user lon", user_lon); 
   getProductExistence(product_id);
   //console.log("from, button, buynow, ", productExists);
   let doesProductExist = sessionStorage.getItem('productExists');
-  console.log(doesProductExist);
+  console.log("results from does product exist session storage", doesProductExist);
   if (doesProductExist === 'true') {
     alert('Transaction Successful Thank you');
     buyProduct(product_id, user_lat, user_lon);
