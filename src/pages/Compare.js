@@ -43,27 +43,74 @@ export function Compare() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [error, setError] = useState('');
+  const [ipAddress, setIpAddress] = useState('');
+
   const [userLocation, setUserLocation] = useState({ lat: '', lon: '' });
   const [purchaseMade, setPurchaseMade] = useState(false);
 
   useEffect(() => {
-    fetch('http://ip-api.com/json')
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.lat && data.lon) {
-          setUserLocation({ lat: data.lat, lon: data.lon });
-        }
-      })
-      .catch(err => console.error('Error fetching location:', err));
+    const fetchIP = async () => {
+      try {
+        const response = await axios.get('https://api.ipify.org?format=json');
+        setIpAddress(response.data.ip);
+        console.log('IP fetched and set:', response.data.ip);
+      } catch (error) {
+        console.error('Error fetching the IP address:', error);
+      }
+    };
+  
+    fetchIP();
   }, []);
 
-  const fetchProducts = () => {
-    if (location.state && location.state.products) {
-      setProducts(location.state.products);
-    } else {
-      setError("No products data was passed to the comparison page.");
+  // useEffect(() => {
+  //   if (ipAddress) {
+  //     console.log(ipAddress);
+  //   }
+  // }, [ipAddress]);
+
+  useEffect(() => {
+    const httpGetAsync = (url, callback) => {
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                callback(xmlHttp.responseText);
+            }
+        }
+        xmlHttp.open("GET", url, true);
+        xmlHttp.send(null);
     }
-  };
+
+    if (ipAddress) {
+        const url = `https://ipgeolocation.abstractapi.com/v1/?api_key=204fa0a3e0a7463e895f8549a8cdf1c3&ip_address=${ipAddress}`;
+        httpGetAsync(url, (response) => {
+          const geolocationData = JSON.parse(response);
+          //console.log('Latitude:', geolocationData.latitude, 'Longitude:', geolocationData.longitude);
+          setUserLocation({
+            lat: geolocationData.latitude,
+            lon: geolocationData.longitude
+        });
+        });
+    }
+}, [ipAddress]);
+
+  // useEffect(() => {
+  //   fetch('http://ip-api.com/json')
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       if (data && data.lat && data.lon) {
+  //         setUserLocation({ lat: data.lat, lon: data.lon });
+  //       }
+  //     })
+  //     .catch(err => console.error('Error fetching location:', err));
+  // }, []);
+
+  // const fetchProducts = () => {
+  //   if (location.state && location.state.products) {
+  //     setProducts(location.state.products);
+  //   } else {
+  //     setError("No products data was passed to the comparison page.");
+  //   }
+  // };
 
   useEffect(() => {
     fetchProducts();
