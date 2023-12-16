@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import placeholderImage from '../img/placeholder.png';
 import confetti from 'canvas-confetti';
+import axios from 'axios';
 
 // Adjusted styles
 const tableStyle = {
